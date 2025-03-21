@@ -74,3 +74,10 @@ jobs:
       with:
         name: test-results
         path: BackEnd/emergency-hospital-allocation/build/reports/tests/test
+        
+    - name: 🚀 Trigger CD pipeline
+      if: success()
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: trigger-cd
