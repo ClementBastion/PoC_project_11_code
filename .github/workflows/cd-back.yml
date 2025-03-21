@@ -1,0 +1,47 @@
+name: CD - Fake Delivery
+
+on:
+  repository_dispatch:
+    types: [trigger-cd]
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BackEnd/emergency-hospital-allocation
+
+    steps:
+    - name: ⬇️ Checkout code
+      uses: actions/checkout@v4
+
+    - name: ☕ Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+
+    - name: 🛠️ Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: 🏗️ Build JAR
+      run: ./gradlew bootJar
+
+    - name: 🐳 Build Docker image
+      run: docker build -t medhead/emergency-hospital-allocation .
+
+    - name: 📤 Simulate push to registry
+      run: echo "Pretending to push Docker image medhead/emergency-hospital-allocation:latest"
+
+    - name: 🗂️ Prepare delivery artifact
+      run: |
+        mkdir -p fake-delivery
+        cp build/libs/*.jar fake-delivery/
+        echo "Docker image: medhead/emergency-hospital-allocation:latest" > fake-delivery/delivery-info.txt
+        echo "Built at: $(date)" >> fake-delivery/delivery-info.txt
+
+    - name: 📦 Archive delivery artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: delivery-artifact
+        path: BackEnd/emergency-hospital-allocation/fake-delivery/
