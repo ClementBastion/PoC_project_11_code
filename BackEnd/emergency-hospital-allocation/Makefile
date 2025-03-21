@@ -1,7 +1,7 @@
 .PHONY: db db-logs
 
-db:
-	docker compose -f compose_db.yaml up -d
+env:
+	docker compose -f compose_env.yaml up -d
 
-db-logs:
-	docker compose -f compose_db.yaml logs -f
+env-logs:
+	docker compose -f compose_env.yaml logs -f
