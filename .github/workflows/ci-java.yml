@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: 🔎 Lister les fichiers pour debug
-      run: ls -R
+      run: make env
       working-directory: ${{ github.workspace }}  
 
     - name: ⚙️ Set up JDK 17
@@ -32,8 +32,7 @@ jobs:
         distribution: 'temurin'
         java-version: 17
         
-    - name: 🏗️ Lancer Keycloak en local
-      run: docker run -d --name keycloak -p 8081:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:22.0.1 start-dev
+    
 
     - name: 🛠️ Grant execute permission for gradlew
       run: chmod +x ./gradlew
