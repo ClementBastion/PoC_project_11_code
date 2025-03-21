@@ -1,0 +1,63 @@
+Index: emergency-hospital-allocation/Makefile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/emergency-hospital-allocation/Makefile b/emergency-hospital-allocation/Makefile
+new file mode 100644
+--- /dev/null	(date 1742461583129)
++++ b/emergency-hospital-allocation/Makefile	(date 1742461583129)
+@@ -0,0 +1,7 @@
++.PHONY: db db-logs
++
++db:
++	docker compose -f compose_db.yaml up -d
++
++db-logs:
++	docker compose -f compose_db.yaml logs -f
+Index: emergency-hospital-allocation/compose_db.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/emergency-hospital-allocation/compose_db.yaml b/emergency-hospital-allocation/compose_db.yaml
+new file mode 100644
+--- /dev/null	(date 1742461188696)
++++ b/emergency-hospital-allocation/compose_db.yaml	(date 1742461188696)
+@@ -0,0 +1,36 @@
++version: '3.8'
++
++services:
++  db:
++    image: postgres:15
++    container_name: emergency_hospital_db
++    restart: always
++    environment:
++      POSTGRES_USER: postgres
++      POSTGRES_PASSWORD: testpassword
++      POSTGRES_DB: emergency_hospital
++    ports:
++      - "5432:5432"
++    volumes:
++      - db_data:/var/lib/postgresql/data
++    networks:
++      - app_network
++
++  pgadmin:
++    image: dpage/pgadmin4
++    container_name: pgadmin
++    restart: always
++    environment:
++      PGADMIN_DEFAULT_EMAIL: admin@example.com
++      PGADMIN_DEFAULT_PASSWORD: admin
++    ports:
++      - "5050:80"
++    networks:
++      - app_network
++
++networks:
++  app_network:
++    driver: bridge
++
++volumes:
++  db_data:
