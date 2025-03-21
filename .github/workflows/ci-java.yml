@@ -1,0 +1,42 @@
+name: CI - Build & Test Spring Boot App
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BackEnd/emergency-hospital-allocation
+
+    steps:
+    - name: ⬇️ Checkout code
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+
+    - name: 🛠️ Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: 🧪 Build and run tests
+      run: ./gradlew build
+
+    - name: ✅ Archive test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: BackEnd/emergency-hospital-allocation/build/reports/tests/test
