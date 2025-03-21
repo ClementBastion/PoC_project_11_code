@@ -22,8 +22,37 @@ jobs:
     - name: ⬇️ Checkout code
       uses: actions/checkout@v4
       
-    - name: make env
-      run: make env
+    - name: 🧱 Start Keycloak
+      run: |
+        docker run -d \
+          --name keycloak \
+          -p 8081:8080 \
+          -e KEYCLOAK_ADMIN=admin \
+          -e KEYCLOAK_ADMIN_PASSWORD=admin \
+          quay.io/keycloak/keycloak:24.0.1 \
+          start-dev
+          
+    - name: ⏳ Wait for Keycloak to start
+      run: |
+        for i in {1..30}; do
+          curl -s http://localhost:8081/realms/master || sleep 2
+        done
+
+    - name: ⚙️ Configure Keycloak realm and client
+      run: |
+        docker exec keycloak /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin
+    
+        docker exec keycloak /opt/keycloak/bin/kcadm.sh create realms -s realm=medhead -s enabled=true
+    
+        docker exec keycloak /opt/keycloak/bin/kcadm.sh create clients -r medhead -s clientId=emergency-app \
+          -s enabled=true \
+          -s 'redirectUris=["http://localhost:8080/*"]' \
+          -s 'publicClient=false' \
+          -s 'secret=5VgmTTTjjvoyx19TErAOSxtcke0VbcbC' \
+          -s 'standardFlowEnabled=true'
+
+
+
 
     - name: ⚙️ Set up JDK 17
       uses: actions/setup-java@v4
