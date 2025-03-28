@@ -3,6 +3,7 @@ package com.medhead.emergency;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 /**
  * Main class for the Emergency Hospital Allocation application.
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication
 @EnableScheduling  // Enables support for scheduled tasks (e.g., CRON jobs)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class EmergencyHospitalAllocationApplication {
 
 	/**

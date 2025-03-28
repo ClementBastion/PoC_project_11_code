@@ -2,6 +2,7 @@ package com.medhead.emergency.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +21,7 @@ import java.util.Map;
  * Configures endpoint access control and JWT-based authentication.
  */
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     /**
@@ -34,7 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()                      // Public endpoints
+                        .requestMatchers("/public/**").permitAll()                      // Public endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")              // Admin-only
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")            // Doctor-only
                         .requestMatchers("/nurse/**").hasRole("NURSE")              // Nurse-only

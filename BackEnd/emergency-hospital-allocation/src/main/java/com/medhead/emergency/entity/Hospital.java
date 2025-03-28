@@ -1,8 +1,13 @@
 package com.medhead.emergency.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +32,10 @@ public class Hospital {
     private String postcode;
     private String country;
     private String uprn;  // Unique Property Reference Number
+
+    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HospitalSpeciality> hospitalSpecialities = new ArrayList<>();
+
 
     // Default constructor required by JPA
     public Hospital() {}
