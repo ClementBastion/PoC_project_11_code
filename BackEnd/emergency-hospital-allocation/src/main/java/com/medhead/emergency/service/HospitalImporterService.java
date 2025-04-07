@@ -156,53 +156,81 @@ public class HospitalImporterService {
         }
     }
 
+    /**
+     * Geocodes a full postal address using the OpenStreetMap Nominatim API.
+     * Returns the latitude and longitude as a double array.
+     *
+     * @param address The full address to geocode
+     * @return A double array [latitude, longitude] or null if not found
+     */
     private double[] geocodeAddress(String address) {
         try {
+            // Build the request URL by encoding the address
             String url = "https://nominatim.openstreetmap.org/search?q=" +
                     URLEncoder.encode(address, StandardCharsets.UTF_8) +
                     "&format=json&limit=1";
 
+            // Send a GET request with appropriate headers
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("User-Agent", "MedHead-PoC/1.0 (email@example.com)");
+            conn.setRequestProperty("User-Agent", "MedHead-PoC/1.0 (email@example.com)"); // Required by Nominatim
 
+            // Read the response as a single string
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = reader.lines().collect(Collectors.joining("\n"));
 
+            // Parse the JSON response
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
 
+            // If the response is not an array or is empty, return null
             if (!root.isArray() || root.isEmpty()) return null;
 
+            // Extract latitude and longitude from the first result
             double lat = root.get(0).path("lat").asDouble();
             double lon = root.get(0).path("lon").asDouble();
             return new double[]{lat, lon};
 
         } catch (Exception e) {
+            // Log any exception and return null
             System.err.println("⚠️ " + e.getMessage());
             return null;
         }
     }
+
+    /**
+     * Geocodes a postcode using the Postcodes.io API.
+     * Returns the latitude and longitude as a double array.
+     *
+     * @param postcode The UK postcode to geocode
+     * @return A double array [latitude, longitude] or null if not found
+     */
     private double[] geocodePostcode(String postcode) {
         try {
+            // Build the request URL, stripping spaces from the postcode
             String url = "https://api.postcodes.io/postcodes/" + postcode.replaceAll(" ", "");
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestProperty("Accept", "application/json");
 
+            // Read the response as a single string
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String response = reader.lines().collect(Collectors.joining("\n"));
 
+            // Parse the JSON response
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response);
             JsonNode result = root.path("result");
 
+            // If the result node is missing, return null
             if (result.isMissingNode()) return null;
 
+            // Extract latitude and longitude from the result
             double lat = result.path("latitude").asDouble();
             double lon = result.path("longitude").asDouble();
             return new double[]{lat, lon};
 
         } catch (Exception e) {
+            // Log any exception and return null
             System.err.println(e.getMessage());
             return null;
         }
