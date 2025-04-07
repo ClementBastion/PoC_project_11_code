@@ -29,12 +29,15 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: [ "start-dev" ]
+    command: [ "start-dev" , "--import-realm"]
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
       - "8081:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import
     networks:
       - app_network
 
@@ -44,3 +47,4 @@ networks:
 
 volumes:
   db_data:
+  keycloak_data:
