@@ -32,6 +32,8 @@ public class Hospital {
     private String postcode;
     private String country;
     private String uprn;  // Unique Property Reference Number
+    private String latitude;
+    private String longitude;
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HospitalSpeciality> hospitalSpecialities = new ArrayList<>();
@@ -109,5 +111,21 @@ public class Hospital {
         return Stream.of(addressLine1, addressLine2, addressLine3, town, postcode)
                 .filter(s -> s != null && !s.isBlank())
                 .collect(Collectors.joining(", "));
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

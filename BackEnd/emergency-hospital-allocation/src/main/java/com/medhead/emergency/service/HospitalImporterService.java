@@ -11,7 +11,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,6 +103,28 @@ public class HospitalImporterService {
                         System.err.println("❌ GeoLoc [" + orgId + "] : " + ex.getMessage());
                     }
 
+                    String fullAddress = String.join(", ",
+                            hospital.getAddressLine1(),
+                            hospital.getAddressLine2(),
+                            hospital.getAddressLine3(),
+                            hospital.getTown(),
+                            hospital.getPostcode()
+                    );
+                    double[] coords = geocodeAddress(fullAddress);
+                    if (coords != null) {
+                        hospital.setLatitude(String.valueOf(coords[0]));
+                        hospital.setLongitude(String.valueOf(coords[1]));
+                    }
+                    else {
+                        System.out.println("dont find geolocation");
+                        coords = geocodePostcode(hospital.getPostcode());
+                        if (coords != null) {
+                            hospital.setLatitude(String.valueOf(coords[0]));
+                            hospital.setLongitude(String.valueOf(coords[1]));
+                            System.out.println("Find geolocation"+ Arrays.toString(coords));
+                        }
+                    }
+
                     // Log import or update operation
                     System.out.println((existingOpt.isPresent() ? "🔄 Update" : "✅ Import") + " : " + hospital.getName() + " [" + orgId + "]");
                     System.out.println("📌 Country : " + hospital.getCountry() + " | UPRN : " + hospital.getUprn());
@@ -127,6 +152,58 @@ public class HospitalImporterService {
             if (value == null || value.isBlank()) return null;
             return new SimpleDateFormat("yyyy-MM-dd").parse(value);
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private double[] geocodeAddress(String address) {
+        try {
+            String url = "https://nominatim.openstreetmap.org/search?q=" +
+                    URLEncoder.encode(address, StandardCharsets.UTF_8) +
+                    "&format=json&limit=1";
+
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("User-Agent", "MedHead-PoC/1.0 (email@example.com)");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = reader.lines().collect(Collectors.joining("\n"));
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+
+            if (!root.isArray() || root.isEmpty()) return null;
+
+            double lat = root.get(0).path("lat").asDouble();
+            double lon = root.get(0).path("lon").asDouble();
+            return new double[]{lat, lon};
+
+        } catch (Exception e) {
+            System.err.println("⚠️ " + e.getMessage());
+            return null;
+        }
+    }
+    private double[] geocodePostcode(String postcode) {
+        try {
+            String url = "https://api.postcodes.io/postcodes/" + postcode.replaceAll(" ", "");
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestProperty("Accept", "application/json");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String response = reader.lines().collect(Collectors.joining("\n"));
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response);
+            JsonNode result = root.path("result");
+
+            if (result.isMissingNode()) return null;
+
+            double lat = result.path("latitude").asDouble();
+            double lon = result.path("longitude").asDouble();
+            return new double[]{lat, lon};
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
             return null;
         }
     }
