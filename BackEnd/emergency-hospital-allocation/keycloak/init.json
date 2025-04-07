@@ -1,0 +1,60 @@
+{
+  "realm": "medhead",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "emergency-app",
+      "enabled": true,
+      "redirectUris": ["http://localhost:8080/*"],
+      "publicClient": false,
+      "secret": "5VgmTTTjjvoyx19TErAOSxtcke0VbcbC",
+      "standardFlowEnabled": true,
+      "protocol": "openid-connect",
+      "directAccessGrantsEnabled": true
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "ROLE_DOCTOR",
+        "description": "DOCTOR"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "doctor@example.com",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "doctor@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "doctest",
+          "temporary": false
+        }
+      ],
+      "requiredActions": [],
+      "realmRoles": ["ROLE_DOCTOR"]
+    },
+    {
+      "username": "dr-john",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "dr-john@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "requiredActions": [],
+      "realmRoles": ["ROLE_DOCTOR"]
+    }
+  ]
+}
