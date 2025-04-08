@@ -45,6 +45,8 @@ dependencies {
 	testImplementation 'org.testcontainers:postgresql'
 	testImplementation 'io.rest-assured:rest-assured'
 	testImplementation 'io.rest-assured:json-path'
+	testImplementation 'org.mockito:mockito-core:5.3.1'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

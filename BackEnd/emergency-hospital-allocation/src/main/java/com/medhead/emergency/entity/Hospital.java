@@ -84,7 +84,14 @@ public class Hospital {
                         && hs.getAvailableBeds() > 0);
     }
 
+    public void addSpeciality(Speciality speciality, int availableBeds) {
+        HospitalSpeciality hospitalSpeciality = new HospitalSpeciality();
+        hospitalSpeciality.setHospital(this);
+        hospitalSpeciality.setSpeciality(speciality);
+        hospitalSpeciality.setAvailableBeds(availableBeds);
 
+        this.hospitalSpecialities.add(hospitalSpeciality);
+    }
 
     // Getters and setters for all fields
     public String getOrgId() { return orgId; }
