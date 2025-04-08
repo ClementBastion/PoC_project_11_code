@@ -32,8 +32,8 @@ public class Hospital {
     private String postcode;
     private String country;
     private String uprn;  // Unique Property Reference Number
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HospitalSpeciality> hospitalSpecialities = new ArrayList<>();
@@ -61,6 +61,36 @@ public class Hospital {
         this.lastChangeDate = lastChangeDate;
         this.primaryRoleId = primaryRoleId;
         this.orgLink = orgLink;
+    }
+
+    /**
+     * Checks if the hospital offers the given speciality.
+     * @param specialityName The name of the speciality to check (e.g., "Cardiology")
+     * @return true if the hospital has this speciality, false otherwise
+     */
+    public boolean hasSpeciality(String specialityName) {
+        return hospitalSpecialities.stream()
+                .anyMatch(hs -> hs.getSpeciality().getName().equalsIgnoreCase(specialityName));
+    }
+
+    /**
+     * Checks if the hospital offers the given speciality and has at least one available bed.
+     * @param specialityName The name of the speciality
+     * @return true if the hospital has at least one available bed for the given speciality
+     */
+    public boolean hasAvailableBedForSpeciality(String specialityName) {
+        return hospitalSpecialities.stream()
+                .anyMatch(hs -> hs.getSpeciality().getName().equalsIgnoreCase(specialityName)
+                        && hs.getAvailableBeds() > 0);
+    }
+
+    public void addSpeciality(Speciality speciality, int availableBeds) {
+        HospitalSpeciality hospitalSpeciality = new HospitalSpeciality();
+        hospitalSpeciality.setHospital(this);
+        hospitalSpeciality.setSpeciality(speciality);
+        hospitalSpeciality.setAvailableBeds(availableBeds);
+
+        this.hospitalSpecialities.add(hospitalSpeciality);
     }
 
     // Getters and setters for all fields
@@ -113,19 +143,19 @@ public class Hospital {
                 .collect(Collectors.joining(", "));
     }
 
-    public String getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 }

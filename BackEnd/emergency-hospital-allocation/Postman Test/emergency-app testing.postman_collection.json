@@ -262,6 +262,56 @@
 			]
 		},
 		{
+			"name": "HospitalLocatorController",
+			"item": [
+				{
+					"name": "findNearestHospital",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/hospitals/search?lat=51.58487728930564&lon=0.8861695834117534&speciality=Periodontics",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"hospitals",
+								"search"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "51.58487728930564"
+								},
+								{
+									"key": "lon",
+									"value": "0.8861695834117534"
+								},
+								{
+									"key": "speciality",
+									"value": "Periodontics"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Register&SaveToken",
 			"event": [
 				{
