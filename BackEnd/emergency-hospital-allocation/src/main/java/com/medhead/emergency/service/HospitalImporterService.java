@@ -112,15 +112,15 @@ public class HospitalImporterService {
                     );
                     double[] coords = geocodeAddress(fullAddress);
                     if (coords != null) {
-                        hospital.setLatitude(String.valueOf(coords[0]));
-                        hospital.setLongitude(String.valueOf(coords[1]));
+                        hospital.setLatitude(coords[0]);
+                        hospital.setLongitude(coords[1]);
                     }
                     else {
                         System.out.println("dont find geolocation");
                         coords = geocodePostcode(hospital.getPostcode());
                         if (coords != null) {
-                            hospital.setLatitude(String.valueOf(coords[0]));
-                            hospital.setLongitude(String.valueOf(coords[1]));
+                            hospital.setLatitude(coords[0]);
+                            hospital.setLongitude(coords[1]);
                             System.out.println("Find geolocation"+ Arrays.toString(coords));
                         }
                     }
