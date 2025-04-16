@@ -21,3 +21,6 @@ jmeter:
 
 postman:
 	$(POSTMAN_PATH)/Postman
+
+test:
+	./gradlew test
