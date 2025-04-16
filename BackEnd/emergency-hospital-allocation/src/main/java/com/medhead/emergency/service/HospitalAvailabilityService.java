@@ -2,6 +2,7 @@ package com.medhead.emergency.service;
 
 import com.medhead.emergency.entity.Hospital;
 import com.medhead.emergency.entity.HospitalSpeciality;
+import com.medhead.emergency.event.BedAllocationEventPublisher;
 import com.medhead.emergency.repository.HospitalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ public class HospitalAvailabilityService {
 
     @Autowired
     private HospitalRepository hospitalRepository;
+
+    @Autowired
+    private BedAllocationEventPublisher bedAllocationEventPublisher;
 
     @Transactional
     public boolean hasAvailableBedForSpeciality(Hospital hospital, String speciality) {
@@ -39,5 +43,8 @@ public class HospitalAvailabilityService {
         target.setAvailableBeds(target.getAvailableBeds() - 1);
 
         hospitalRepository.save(hospital);
+
+        // Publish event
+        bedAllocationEventPublisher.publishBedAllocated(hospital, specialityName);
     }
 }

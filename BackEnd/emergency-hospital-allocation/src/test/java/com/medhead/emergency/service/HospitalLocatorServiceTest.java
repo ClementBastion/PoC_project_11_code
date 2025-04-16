@@ -2,6 +2,7 @@ package com.medhead.emergency.service;
 
 import com.medhead.emergency.entity.Hospital;
 import com.medhead.emergency.entity.Speciality;
+import com.medhead.emergency.event.BedAllocationEventPublisher;
 import com.medhead.emergency.repository.HospitalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,12 @@ class HospitalLocatorServiceTest {
 
     @InjectMocks
     private HospitalLocatorService hospitalLocatorService;
+
+    @Mock
+    private BedAllocationEventPublisher eventPublisher;
+
+    @InjectMocks
+    private HospitalAvailabilityService availabilityService;
 
 
     @BeforeEach
@@ -181,5 +188,24 @@ class HospitalLocatorServiceTest {
         // Assert
         assertTrue(result.isPresent());
         assertEquals("Hospital 99", result.get().getName());
+    }
+
+    @Test
+    void shouldPublishEvent() {
+        Speciality cardio = new Speciality("Cardiology");
+
+        Hospital hospital = new Hospital();
+        hospital.setOrgId("HOSP-TEST");
+        hospital.setName("Hôpital Mockito");
+        hospital.addSpeciality(cardio, 2);
+
+        when(hospitalRepository.findById("HOSP-TEST")).thenReturn(Optional.of(hospital));
+
+        // Act
+        availabilityService.allocateBed("HOSP-TEST", "Cardiology");
+
+        // Assert
+        verify(eventPublisher, times(1))
+                .publishBedAllocated(hospital, "Cardiology");
     }
 }
