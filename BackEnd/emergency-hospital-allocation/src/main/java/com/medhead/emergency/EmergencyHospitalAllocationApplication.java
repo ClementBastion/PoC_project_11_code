@@ -2,6 +2,7 @@ package com.medhead.emergency;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  * - Enables scheduling support (e.g., for cron jobs).
  */
 @SpringBootApplication
+@EnableCaching
 @PropertySource("classpath:application-secrets.properties")
 @EnableScheduling  // Enables support for scheduled tasks (e.g., CRON jobs)
 public class EmergencyHospitalAllocationApplication {
