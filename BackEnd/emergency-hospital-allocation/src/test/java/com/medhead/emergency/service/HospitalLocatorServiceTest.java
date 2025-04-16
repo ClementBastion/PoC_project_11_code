@@ -6,7 +6,9 @@ import com.medhead.emergency.repository.HospitalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.modelmapper.ModelMapper;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,10 +25,32 @@ class HospitalLocatorServiceTest {
     @InjectMocks
     private HospitalLocatorService hospitalLocatorService;
 
+
     @BeforeEach
-    void setup() {
-        // Initialize Mockito mocks before each test
+    void setup() throws Exception {
         MockitoAnnotations.openMocks(this);
+
+        hospitalLocatorService = new HospitalLocatorService();
+
+        // hospitalRepository
+        Field repoField = HospitalLocatorService.class.getDeclaredField("hospitalRepository");
+        repoField.setAccessible(true);
+        repoField.set(hospitalLocatorService, hospitalRepository);
+
+        // travelTimeService
+        Field travelField = HospitalLocatorService.class.getDeclaredField("travelTimeService");
+        travelField.setAccessible(true);
+        travelField.set(hospitalLocatorService, travelTimeService);
+
+        // availabilityService
+        Field availField = HospitalLocatorService.class.getDeclaredField("availabilityService");
+        availField.setAccessible(true);
+        availField.set(hospitalLocatorService, new HospitalAvailabilityService());
+
+        // modelMapper
+        Field mapperField = HospitalLocatorService.class.getDeclaredField("modelMapper");
+        mapperField.setAccessible(true);
+        mapperField.set(hospitalLocatorService, new ModelMapper());
     }
 
     @Test

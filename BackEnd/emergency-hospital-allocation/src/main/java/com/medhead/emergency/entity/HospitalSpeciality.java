@@ -1,5 +1,6 @@
 package com.medhead.emergency.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +11,7 @@ public class HospitalSpeciality {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private Hospital hospital;
 
     @ManyToOne

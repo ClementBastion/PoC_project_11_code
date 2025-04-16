@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class TravelTimeService {
      * @param endLon Destination longitude
      * @return Estimated travel time in minutes, or Integer.MAX_VALUE if error occurs
      */
+    @Cacheable("travelTimes")
     public int getTravelTimeInMinutes(double startLat, double startLon, double endLat, double endLon) {
         try {
             // Validate input coordinates to avoid invalid API calls

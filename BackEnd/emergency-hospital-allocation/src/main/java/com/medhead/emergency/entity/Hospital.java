@@ -93,6 +93,8 @@ public class Hospital {
         this.hospitalSpecialities.add(hospitalSpeciality);
     }
 
+
+
     // Getters and setters for all fields
     public String getOrgId() { return orgId; }
     public void setOrgId(String orgId) { this.orgId = orgId; }
@@ -158,4 +160,14 @@ public class Hospital {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+    public List<HospitalSpeciality> getHospitalSpecialities() {
+        return hospitalSpecialities;
+    }
+
+    public void setHospitalSpecialities(List<HospitalSpeciality> hospitalSpecialities) {
+        this.hospitalSpecialities = hospitalSpecialities;
+    }
+
+
 }
