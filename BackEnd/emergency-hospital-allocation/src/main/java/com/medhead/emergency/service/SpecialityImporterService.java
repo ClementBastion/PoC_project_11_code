@@ -59,13 +59,13 @@ public class SpecialityImporterService {
 
                     // Randomly assign this speciality to 1 to N hospitals
                     Collections.shuffle(hospitals);
-                    int numAssignments = ThreadLocalRandom.current().nextInt(1, Math.min(5, hospitals.size()) + 1);
+                    int numAssignments = ThreadLocalRandom.current().nextInt(1, Math.min(hospitals.size()/5, hospitals.size()) + 1);
 
                     logger.info("🔗 Assigning speciality '{}' to {} hospital(s)", specialityName, numAssignments);
 
                     for (int i = 0; i < numAssignments; i++) {
                         Hospital hospital = hospitals.get(i);
-                        int availableBeds = ThreadLocalRandom.current().nextInt(0, 20); // e.g. 0 to 19
+                        int availableBeds = ThreadLocalRandom.current().nextInt(0, 200);
 
                         HospitalSpeciality hs = new HospitalSpeciality();
                         hs.setHospital(hospital);
