@@ -1,35 +1,52 @@
 package com.medhead.emergency.event;
 
 import com.medhead.emergency.entity.Hospital;
+import com.medhead.emergency.kafka.BedAllocatedMessageDTO;
+import com.medhead.emergency.kafka.KafkaBedAllocationPublisher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
- * Component responsible for publishing bed allocation events using Spring's application event mechanism.
- * This allows the system to notify other components asynchronously when a hospital bed has been allocated.
+ * This component is responsible for publishing hospital bed allocation events.
+ * It broadcasts the event internally using Spring's event system and externally through Kafka.
  */
 @Component
 public class BedAllocationEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final KafkaBedAllocationPublisher kafkaPublisher;
 
     /**
-     * Constructs a new BedAllocationEventPublisher with the provided ApplicationEventPublisher.
+     * Constructs a BedAllocationEventPublisher with the required publishers.
      *
-     * @param applicationEventPublisher the Spring-provided publisher used to broadcast events
+     * @param applicationEventPublisher the internal Spring event publisher
+     * @param kafkaPublisher the Kafka event publisher for external messaging
      */
-    public BedAllocationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    public BedAllocationEventPublisher(
+            ApplicationEventPublisher applicationEventPublisher,
+            KafkaBedAllocationPublisher kafkaPublisher
+    ) {
         this.applicationEventPublisher = applicationEventPublisher;
+        this.kafkaPublisher = kafkaPublisher;
     }
 
     /**
-     * Publishes an event indicating that a bed has been allocated at a given hospital for a specific speciality.
+     * Publishes a bed allocation event both internally (Spring) and externally (Kafka).
      *
-     * @param hospital the hospital where the bed was allocated
-     * @param speciality the medical speciality associated with the allocated bed
+     * @param hospital the hospital where the bed has been allocated
+     * @param speciality the medical speciality for which the bed has been allocated
      */
     public void publishBedAllocated(Hospital hospital, String speciality) {
+        // Publish internal Spring event for local listeners
         BedAllocatedEvent event = new BedAllocatedEvent(this, hospital, speciality);
         applicationEventPublisher.publishEvent(event);
+
+        // Publish external Kafka message for distributed systems or integration
+        BedAllocatedMessageDTO message = new BedAllocatedMessageDTO(
+                hospital.getOrgId(),
+                hospital.getName(),
+                speciality
+        );
+        kafkaPublisher.publish(message);
     }
 }
