@@ -9,6 +9,9 @@ env:
 env-logs:
 	docker compose -f compose_env.yaml logs -f
 
+env-build:
+	docker compose -f compose_env.yaml up --build
+
 clean-keycloak:
 	docker rm -f keycloak || true
 	docker volume rm emergency-hospital-allocation_keycloak_data || true
@@ -24,3 +27,8 @@ postman:
 
 test:
 	./gradlew test
+
+kafka-messages:
+	docker exec -it kafka \
+	kafka-console-consumer --bootstrap-server kafka:29092 \
+	--topic hospital.bed.allocated --from-beginning --property print.key=true --property print.timestamp=true

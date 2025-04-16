@@ -11,12 +11,28 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class CacheConfig {
 
+    /**
+     * Configures the cache manager using Caffeine.
+     * This cache manager defines named caches for various application use cases
+     * with a maximum size and time-to-live expiration policy.
+     *
+     * @return the configured Caffeine-based CacheManager
+     */
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager("allHospitals", "findAllWithSpecialities", "travelTimes", "bestHospital");
+        // Define caches by name: used in @Cacheable annotations
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "allHospitals",
+                "findAllWithSpecialities",
+                "travelTimes",
+                "bestHospital"
+        );
+
+        // Configure expiration and size limit
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES)
-                .maximumSize(1000));
+                .expireAfterWrite(5, TimeUnit.MINUTES)  // Expire entries 5 minutes after write
+                .maximumSize(1000));                    // Limit cache to 1000 entries
+
         return cacheManager;
     }
 }
