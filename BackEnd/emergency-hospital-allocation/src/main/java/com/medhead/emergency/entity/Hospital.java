@@ -1,15 +1,16 @@
 package com.medhead.emergency.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.geolatte.geom.C2D;
+import org.geolatte.geom.G2D;
+import org.geolatte.geom.Point;
 
 @Entity  // Marks this class as a JPA entity mapped to a database table
 public class Hospital {
@@ -34,6 +35,10 @@ public class Hospital {
     private String uprn;  // Unique Property Reference Number
     private Double latitude;
     private Double longitude;
+
+    @Column(columnDefinition = "geography(Point,4326)")
+    private Point<G2D> geom;
+
 
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HospitalSpeciality> hospitalSpecialities = new ArrayList<>();
@@ -169,5 +174,11 @@ public class Hospital {
         this.hospitalSpecialities = hospitalSpecialities;
     }
 
+    public Point<G2D> getGeom() {
+        return geom;
+    }
+    public void setGeom(Point<G2D> geom) {
+        this.geom = geom;
+    }
 
 }

@@ -3,6 +3,12 @@ package com.medhead.emergency.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medhead.emergency.entity.Hospital;
+import org.geolatte.geom.C2D;
+import org.geolatte.geom.G2D;
+import org.geolatte.geom.Point;
+import org.geolatte.geom.builder.DSL;
+import org.geolatte.geom.crs.CoordinateReferenceSystem;
+import org.geolatte.geom.crs.CoordinateReferenceSystems;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.medhead.emergency.repository.HospitalRepository;
@@ -18,6 +24,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.geolatte.geom.builder.DSL.g;
+import static org.geolatte.geom.builder.DSL.point;
+import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 
 @Service
 public class HospitalImporterService {
@@ -114,6 +124,17 @@ public class HospitalImporterService {
                     if (coords != null) {
                         hospital.setLatitude(coords[0]);
                         hospital.setLongitude(coords[1]);
+
+                        double lon = hospital.getLongitude();
+                        double lat = hospital.getLatitude();
+
+                        Point<G2D> pt = point(
+                                WGS84,
+                                g(lon, lat)
+                        );
+
+                        hospital.setGeom(pt);
+
                     }
                     else {
                         System.out.println("dont find geolocation");
@@ -121,6 +142,17 @@ public class HospitalImporterService {
                         if (coords != null) {
                             hospital.setLatitude(coords[0]);
                             hospital.setLongitude(coords[1]);
+
+                            double lon = hospital.getLongitude();
+                            double lat = hospital.getLatitude();
+
+                            Point<G2D> pt = point(
+                                    WGS84,
+                                    g(lon, lat)
+                            );
+
+                            hospital.setGeom(pt);
+
                             System.out.println("Find geolocation"+ Arrays.toString(coords));
                         }
                     }

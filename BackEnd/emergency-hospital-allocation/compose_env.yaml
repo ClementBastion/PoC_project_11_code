@@ -1,8 +1,7 @@
-version: '3.8'
 
 services:
   db:
-    image: postgres:15
+    image: postgis/postgis:15-3.3
     container_name: emergency_hospital_db
     environment:
       POSTGRES_USER: postgres

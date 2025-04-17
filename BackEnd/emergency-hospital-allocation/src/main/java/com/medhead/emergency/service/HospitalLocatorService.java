@@ -1,172 +1,108 @@
 package com.medhead.emergency.service;
 
-import com.medhead.emergency.DTO.HospitalSnapshot;
 import com.medhead.emergency.entity.Hospital;
 import com.medhead.emergency.repository.HospitalRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import jakarta.transaction.Transactional;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HospitalLocatorService {
+
     private static final Logger logger = LoggerFactory.getLogger(HospitalLocatorService.class);
 
     @Autowired
     private HospitalRepository hospitalRepository;
 
     @Autowired
-    private TravelTimeService travelTimeService; // Wrapper for an external routing API like OpenRouteService
+    private TravelTimeService travelTimeService;
 
     @Autowired
     private HospitalAvailabilityService availabilityService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-
     /**
-     * Finds the best hospital based on speciality, availability, and proximity.
+     * Find the best hospital for the given speciality and patient location.
+     * First, delegate to the database the spatial filtering (using a GiST index
+     * on the `geom` column) to get the nearest candidates with available beds.
+     * Then, among those, pick the one with the lowest travel time.
      *
-     * @param lat Latitude of the patient
-     * @param lon Longitude of the patient
-     * @param speciality Required medical speciality
-     * @return The best matching hospital, wrapped in Optional
+     * @param lat        patient latitude
+     * @param lon        patient longitude
+     * @param speciality required medical speciality
+     * @return Optional containing the selected Hospital, or empty if none found
      */
     @Transactional
     public Optional<Hospital> findBestHospital(double lat, double lon, String speciality) {
+        logger.info("Searching for best hospital for speciality '{}' at location ({}, {})",
+                speciality, lat, lon);
 
-        logger.info("Searching for best hospital for speciality '{}' at location ({}, {})", speciality, lat, lon);
+        // 1) Query the 10 nearest hospitals that have at least one bed for the speciality
+        List<String> nearestIds = hospitalRepository.findNearestBySpeciality(
+                lat, lon, speciality, 10);
 
-        // 1. Load snapshots (cached, light version)
-        List<HospitalSnapshot> snapshots = getAllHospitalSnapshots();
+        if (!nearestIds.isEmpty()) {
+            logger.info("Found {} candidate hospitals via spatial index", nearestIds.size());
 
-        if (snapshots.isEmpty()) {
-            logger.warn("No hospital snapshots found.");
-            return Optional.empty();
-        }
-        logger.info("Loaded {} hospital snapshots, {} after filtering by coordinates",
-                snapshots.size(),
-                snapshots.stream().filter(h -> h.getLatitude() != null && h.getLongitude() != null).count());
+            // 2) Load the Hospital entities in a single batch
+            List<Hospital> candidates = hospitalRepository.findAllById(nearestIds);
 
-        // 2. Keep 10 geographically closest hospitals based on snapshot
-        List<HospitalSnapshot> closestSnapshots = snapshots.stream()
-                .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
-                .sorted(Comparator.comparingDouble(h ->
-                        haversine(lat, lon, h.getLatitude(), h.getLongitude())))
-                .limit(10)
-                .toList();
-
-        logger.info("Loaded {} hospital snapshots, {} after filtering by coordinates",
-                closestSnapshots.size(),
-                closestSnapshots.stream().filter(h -> h.getLatitude() != null && h.getLongitude() != null).count());
-
-        logger.debug("Selected top 10 closest hospital snapshots.");
-
-        // 3. Load full hospital entity for each and filter by availability
-        List<Hospital> availableNearby = closestSnapshots.stream()
-                .map(snap -> hospitalRepository.findByIdWithSpecialities(snap.getId()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(h -> availabilityService.hasAvailableBedForSpeciality(h, speciality))
-                .toList();
-
-        logger.info("Loaded {} hospital snapshots, {} after filtering by coordinates",
-                availableNearby.size(),
-                availableNearby.stream().filter(h -> h.getLatitude() != null && h.getLongitude() != null).count());
-
-
-        if (!availableNearby.isEmpty()) {
-            logger.info("Found {} nearby hospitals with available beds.", availableNearby.size());
-            Hospital selected = availableNearby.stream()
+            // 3) Among the nearest candidates, pick the one with the lowest travel time
+            Hospital best = candidates.stream()
                     .min(Comparator.comparingInt(h ->
-                            travelTimeService.getTravelTimeInMinutes(lat, lon, h.getLatitude(), h.getLongitude())))
-                    .orElseThrow();
-            logger.info("Selected hospital: {}", selected.getName());
-            return Optional.of(selected);
+                            travelTimeService.getTravelTimeInMinutes(
+                                    lat, lon, h.getLatitude(), h.getLongitude())))
+                    .orElseThrow(); // should not happen, list non-empty
+
+            logger.info("Selected hospital: {} (ID={})", best.getName(), best.getOrgId());
+            return Optional.of(best);
         }
 
+        logger.warn("No hospitals found in top 10 spatial query; falling back to top 25");
 
-        logger.warn("No beds available in top 10. Fallback to full search.");
+        // Fallback #1: expand to the 25 nearest
+        List<String> fallbackIds = hospitalRepository.findNearestBySpeciality(
+                lat, lon, speciality, 25);
 
-        List<HospitalSnapshot> safeClosestSnapshots = snapshots.stream()
-                .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
-                .sorted(Comparator.comparingDouble(h ->
-                        haversine(lat, lon, h.getLatitude(), h.getLongitude())))
-                .limit(25)
-                .toList();
-
-        List<Hospital> safeAvailableNearby = safeClosestSnapshots.stream()
-                .map(snap -> hospitalRepository.findById(snap.getId()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(h -> availabilityService.hasAvailableBedForSpeciality(h, speciality))
-                .toList();
-
-        if (!safeAvailableNearby.isEmpty()) {
-            logger.info("Found {} nearby hospitals with available beds.", safeAvailableNearby.size());
-            Hospital selected = safeAvailableNearby.stream()
+        if (!fallbackIds.isEmpty()) {
+            List<Hospital> fallbackCandidates = hospitalRepository.findAllById(fallbackIds);
+            Hospital bestFallback = fallbackCandidates.stream()
                     .min(Comparator.comparingInt(h ->
-                            travelTimeService.getTravelTimeInMinutes(lat, lon, h.getLatitude(), h.getLongitude())))
+                            travelTimeService.getTravelTimeInMinutes(
+                                    lat, lon, h.getLatitude(), h.getLongitude())))
                     .orElseThrow();
-            logger.info("Selected hospital: {}", selected.getName());
-            return Optional.of(selected);
+
+            logger.info("Selected fallback hospital: {} (ID={})",
+                    bestFallback.getName(), bestFallback.getOrgId());
+            return Optional.of(bestFallback);
         }
 
-        logger.warn("No beds available in top 15. Fallback to full search.");
+        logger.warn("No hospitals available in fallback spatial query; performing full scan");
 
-        // 4. Fallback: reload all entities for full search
-        List<Hospital> allHospitals = hospitalRepository.findAll().stream()
+        // Fallback #2: full scan (inefficient)
+        List<Hospital> allAvailable = hospitalRepository.findAll().stream()
                 .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
                 .filter(h -> availabilityService.hasAvailableBedForSpeciality(h, speciality))
                 .toList();
 
-        if (allHospitals.isEmpty()) {
+        if (allAvailable.isEmpty()) {
             logger.error("No hospital with available beds for speciality '{}'", speciality);
             return Optional.empty();
         }
 
-        Hospital selected = allHospitals.stream()
+        Hospital bestOverall = allAvailable.stream()
                 .min(Comparator.comparingInt(h ->
-                        travelTimeService.getTravelTimeInMinutes(lat, lon, h.getLatitude(), h.getLongitude())))
+                        travelTimeService.getTravelTimeInMinutes(
+                                lat, lon, h.getLatitude(), h.getLongitude())))
                 .orElseThrow();
 
-        logger.info("Selected fallback hospital: {}", selected.getName());
-        return Optional.of(selected);
-    }
-
-
-    /**
-     * Calculates the great-circle distance between two points on Earth using the Haversine formula.
-     *
-     * @param lat1 Latitude of the first point
-     * @param lon1 Longitude of the first point
-     * @param lat2 Latitude of the second point
-     * @param lon2 Longitude of the second point
-     * @return Distance in kilometers
-     */
-    private double haversine(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Radius of Earth in kilometers
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
-    @Cacheable("hospitalSnapshots")
-    public List<HospitalSnapshot> getAllHospitalSnapshots() {
-        List<Hospital> hospitalsWithCoordinates = hospitalRepository.findAll().stream()
-                .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
-                .toList();
-
-        return hospitalsWithCoordinates.stream()
-                .map(h -> modelMapper.map(h, HospitalSnapshot.class))
-                .toList();
+        logger.info("Selected hospital by full scan: {} (ID={})",
+                bestOverall.getName(), bestOverall.getOrgId());
+        return Optional.of(bestOverall);
     }
 }

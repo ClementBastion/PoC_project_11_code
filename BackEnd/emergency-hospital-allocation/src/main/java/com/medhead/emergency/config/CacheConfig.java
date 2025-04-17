@@ -30,7 +30,7 @@ public class CacheConfig {
 
         // Configure expiration and size limit
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(5, TimeUnit.MINUTES)  // Expire entries 5 minutes after write
+                .expireAfterWrite(15, TimeUnit.MINUTES)  // Expire entries 5 minutes after write
                 .maximumSize(1000));                    // Limit cache to 1000 entries
 
         return cacheManager;
