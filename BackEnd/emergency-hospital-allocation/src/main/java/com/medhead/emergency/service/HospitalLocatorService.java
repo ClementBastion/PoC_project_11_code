@@ -2,6 +2,7 @@ package com.medhead.emergency.service;
 
 import com.medhead.emergency.entity.Hospital;
 import com.medhead.emergency.repository.HospitalRepository;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class HospitalLocatorService {
     @Autowired
     private HospitalAvailabilityService availabilityService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     /**
      * Find the best hospital for the given speciality and patient location.
      * First, delegate to the database the spatial filtering (using a GiST index
@@ -34,24 +38,28 @@ public class HospitalLocatorService {
      *
      * @param lat        patient latitude
      * @param lon        patient longitude
-     * @param speciality required medical speciality
+     * @param specialityId required medical speciality id
      * @return Optional containing the selected Hospital, or empty if none found
      */
     @Transactional
-    public Optional<Hospital> findBestHospital(double lat, double lon, String speciality) {
+    public Optional<Hospital> findBestHospital(double lat, double lon, int specialityId) {
         logger.info("Searching for best hospital for speciality '{}' at location ({}, {})",
-                speciality, lat, lon);
+                specialityId, lat, lon);
 
-        // 1) Query the 10 nearest hospitals that have at least one bed for the speciality
-        List<String> nearestIds = hospitalRepository.findNearestBySpeciality(
-                lat, lon, speciality, 10);
+        /* 1) Query the 5 nearest hospitals that have at least one bed for the speciality */
+        List<String> nearestIds = hospitalRepository.findNearest(
+                lat, lon, 5);
 
         if (!nearestIds.isEmpty()) {
             logger.info("Found {} candidate hospitals via spatial index", nearestIds.size());
 
             // 2) Load the Hospital entities in a single batch
-            List<Hospital> candidates = hospitalRepository.findAllById(nearestIds);
+            List<Hospital> candidates = hospitalRepository.findAvailableByIdsAndSpecialityId(nearestIds,specialityId);
+            logger.info("Found {} candidate hospitals via spatial index with available bed", candidates.size());
 
+            if (candidates.size() == 1) {
+                return Optional.of(candidates.iterator().next());
+            }
             // 3) Among the nearest candidates, pick the one with the lowest travel time
             Hospital best = candidates.stream()
                     .min(Comparator.comparingInt(h ->
@@ -63,19 +71,21 @@ public class HospitalLocatorService {
             return Optional.of(best);
         }
 
-        logger.warn("No hospitals found in top 10 spatial query; falling back to top 25");
+        logger.warn("No hospitals found in top 5 spatial query; falling back to top 10");
 
-        // Fallback #1: expand to the 25 nearest
-        List<String> fallbackIds = hospitalRepository.findNearestBySpeciality(
-                lat, lon, speciality, 25);
+        // Fallback #1: expand to the 10 nearest
+        List<String> fallbackIds = hospitalRepository.findNearest(
+                lat, lon, 10);
 
         if (!fallbackIds.isEmpty()) {
-            List<Hospital> fallbackCandidates = hospitalRepository.findAllById(fallbackIds);
+            List<Hospital> fallbackCandidates = hospitalRepository.findAvailableByIdsAndSpecialityId(fallbackIds,specialityId);
+            logger.info("Found {} candidate hospitals via spatial index with available bed", fallbackCandidates.size());
             Hospital bestFallback = fallbackCandidates.stream()
                     .min(Comparator.comparingInt(h ->
                             travelTimeService.getTravelTimeInMinutes(
                                     lat, lon, h.getLatitude(), h.getLongitude())))
                     .orElseThrow();
+
 
             logger.info("Selected fallback hospital: {} (ID={})",
                     bestFallback.getName(), bestFallback.getOrgId());
@@ -87,11 +97,11 @@ public class HospitalLocatorService {
         // Fallback #2: full scan (inefficient)
         List<Hospital> allAvailable = hospitalRepository.findAll().stream()
                 .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
-                .filter(h -> availabilityService.hasAvailableBedForSpeciality(h, speciality))
+                .filter(h -> availabilityService.hasAvailableBedForSpeciality(h, specialityId))
                 .toList();
 
         if (allAvailable.isEmpty()) {
-            logger.error("No hospital with available beds for speciality '{}'", speciality);
+            logger.error("No hospital with available beds for speciality '{}'", specialityId);
             return Optional.empty();
         }
 

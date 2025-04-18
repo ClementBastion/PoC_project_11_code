@@ -10,19 +10,19 @@ import org.springframework.context.ApplicationEvent;
 public class BedAllocatedEvent extends ApplicationEvent {
 
     private final Hospital hospital;
-    private final String speciality;
+    private final Integer specialityId;
 
     /**
      * Creates a new BedAllocatedEvent.
      *
      * @param source the component that published the event (typically the service performing the allocation)
      * @param hospital the hospital where the bed was allocated
-     * @param speciality the medical speciality for which the bed was allocated
+     * @param specialityId the medical speciality for which the bed was allocated
      */
-    public BedAllocatedEvent(Object source, Hospital hospital, String speciality) {
+    public BedAllocatedEvent(Object source, Hospital hospital, Integer specialityId) {
         super(source);
         this.hospital = hospital;
-        this.speciality = speciality;
+        this.specialityId = specialityId;
     }
 
     /**
@@ -39,7 +39,7 @@ public class BedAllocatedEvent extends ApplicationEvent {
      *
      * @return the name of the speciality
      */
-    public String getSpeciality() {
-        return speciality;
+    public Integer getSpecialityId() {
+        return specialityId;
     }
 }

@@ -34,18 +34,18 @@ public class BedAllocationEventPublisher {
      * Publishes a bed allocation event both internally (Spring) and externally (Kafka).
      *
      * @param hospital the hospital where the bed has been allocated
-     * @param speciality the medical speciality for which the bed has been allocated
+     * @param specialityId the medical speciality for which the bed has been allocated
      */
-    public void publishBedAllocated(Hospital hospital, String speciality) {
+    public void publishBedAllocated(Hospital hospital, Integer specialityId) {
         // Publish internal Spring event for local listeners
-        BedAllocatedEvent event = new BedAllocatedEvent(this, hospital, speciality);
+        BedAllocatedEvent event = new BedAllocatedEvent(this, hospital, specialityId);
         applicationEventPublisher.publishEvent(event);
 
-        // Publish external Kafka message for distributed systems or integration
+        // Publish an external Kafka message for distributed systems or integration
         BedAllocatedMessageDTO message = new BedAllocatedMessageDTO(
                 hospital.getOrgId(),
                 hospital.getName(),
-                speciality
+                specialityId
         );
         kafkaPublisher.publish(message);
     }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.geolatte.geom.C2D;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 
@@ -48,7 +47,7 @@ public class Hospital {
     public Hospital() {}
 
     /**
-     * All-args constructor to create a fully-initialized Hospital object.
+     * All-args constructor to create a fully initialized Hospital object.
      */
     public Hospital(String orgId, String name, String addressLine1, String addressLine2, String addressLine3,
                     String town, String postcode, String country, String uprn,

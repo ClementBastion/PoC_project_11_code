@@ -6,8 +6,6 @@
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="800 Users Thread Group">
@@ -35,21 +33,21 @@
               <elementProp name="lat" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.name">lat</stringProp>
-                <stringProp name="Argument.value">48.85</stringProp>
+                <stringProp name="Argument.value">51.58487728930567</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
               </elementProp>
               <elementProp name="lon" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.name">lon</stringProp>
-                <stringProp name="Argument.value">2.35</stringProp>
+                <stringProp name="Argument.value">0.8861695834117534</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
               </elementProp>
-              <elementProp name="speciality" elementType="HTTPArgument">
+              <elementProp name="specialityId" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.name">speciality</stringProp>
-                <stringProp name="Argument.value">Anaesthesia</stringProp>
+                <stringProp name="Argument.name">specialityId</stringProp>
+                <stringProp name="Argument.value">1</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
                 <boolProp name="HTTPArgument.use_equals">true</boolProp>
               </elementProp>
@@ -61,7 +59,7 @@
             <collectionProp name="HeaderManager.headers">
               <elementProp name="Authorization" elementType="Header">
                 <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJOdWhSS0lqZ0dEbWQ3UjV2aGJzZ0RRem02V2dQOEdQUXQ1QmJ2U05zNm1zIn0.eyJleHAiOjE3NDQ3OTE1MzUsImlhdCI6MTc0NDc5MTIzNSwianRpIjoiOWI2MWFiYzEtM2NhNS00ZTQxLWEyMjgtYmY2MmE4MTRhYmQ3IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9tZWRoZWFkIiwic3ViIjoiYzA1NWNiNTEtMmZkOC00MzFlLThiMmItZDZiMDY1ZDJhNDRlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZW1lcmdlbmN5LWFwcCIsInNpZCI6ImJkZDlhOGY2LTA0OTAtNGExZS04ZjZkLTUxZjBmZDZkYmQ0NiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdDo4MDgwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJST0xFX0RPQ1RPUiJdfSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6ImRyLWpvaG4iLCJnaXZlbl9uYW1lIjoiSm9obiIsImZhbWlseV9uYW1lIjoiRG9lIiwiZW1haWwiOiJkci1qb2huQGV4YW1wbGUuY29tIn0.N6K9h6QLLxyYxpwm69fKcwRm-lL-KuVasnuYJhvOdolhDkaCfi-UTvlYF_TDKwUsJliJToFBeWdcIGtTFgygcHsuszK6s0QvimmPi9x-u7J_tE2Dl_AYS5CsZv2otdv4GgxIHvjpyjhLUCRvWgi5RIL_rjr4B5xn6ZJS4wtsmDIQgt7NqIRZO493_xUm-WkD00wkqInpAg92b1zOAZhGml3SZnnJHNu94BH8Dg_q_VL5b5N9Eaf8O09zeN_CaDOudwk1uBolwn6uT7FzP-kGVIFjUGHMK0OMTW_o0kq__yCyc3l30Gt_j4cHJGg5ulnE1PWER6jWSCZFiYR_tKDzJg</stringProp>
+                <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJOdWhSS0lqZ0dEbWQ3UjV2aGJzZ0RRem02V2dQOEdQUXQ1QmJ2U05zNm1zIn0.eyJleHAiOjE3NDQ4OTYzMDEsImlhdCI6MTc0NDg5NjAwMSwianRpIjoiN2Y5MDQwNzgtODA3Zi00YzFiLWJlYTEtODI3MTNkYTU4MTRhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9tZWRoZWFkIiwic3ViIjoiYzA1NWNiNTEtMmZkOC00MzFlLThiMmItZDZiMDY1ZDJhNDRlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZW1lcmdlbmN5LWFwcCIsInNpZCI6IjEzNjM0MWRiLTcyMjUtNDNiOS1hZjk4LTdlNzU4ODlhNDZjMiIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cDovL2xvY2FsaG9zdDo4MDgwIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJST0xFX0RPQ1RPUiJdfSwic2NvcGUiOiJlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJKb2huIERvZSIsInByZWZlcnJlZF91c2VybmFtZSI6ImRyLWpvaG4iLCJnaXZlbl9uYW1lIjoiSm9obiIsImZhbWlseV9uYW1lIjoiRG9lIiwiZW1haWwiOiJkci1qb2huQGV4YW1wbGUuY29tIn0.VmuMtQ_xLOgC2l6yOoPhk4qoSGZfHFBqguUUQ1WOKheb23U46fgMJdyRmu8IdU6xre8ioxSZqWrX8-ayukMnunA35pjUTP8ajIkYNnMYSEvdULjZ4-JhG657XhB0ODgU00YrTPEhL9MvN7loVZldObLG7b89a6pIlrRFlJzCV0SCsF-VjH3KR4Gyt04aGOBofY6AdFU2iRTOzEdKynitfliwyKEsfFp57RQIws7v4guxfTdRhCdK69Hp-obTD6mMwZOFVtCBNRRNA0OgUQcIQnSyEgUv9eXYYpUf0Uwbg48lct1EnyICmM1wYA3WjMUtDq_PCuusG_xaZ4JxCnVe2A</stringProp>
               </elementProp>
               <elementProp name="Content-Type" elementType="Header">
                 <stringProp name="Header.name">Content-Type</stringProp>

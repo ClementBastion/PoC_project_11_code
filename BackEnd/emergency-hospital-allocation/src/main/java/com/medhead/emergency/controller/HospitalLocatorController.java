@@ -2,7 +2,7 @@ package com.medhead.emergency.controller;
 
 import com.medhead.emergency.DTO.MinHospitalDTO;
 import com.medhead.emergency.entity.Hospital;
-import com.medhead.emergency.service.HospitalAvailabilityService;
+import com.medhead.emergency.event.BedAllocationEventPublisher;
 import com.medhead.emergency.service.HospitalLocatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class HospitalLocatorController {
     private HospitalLocatorService hospitalLocatorService;
 
     @Autowired
-    private HospitalAvailabilityService availabilityService;
+    private BedAllocationEventPublisher bedAllocationEventPublisher;
 
 
     /**
@@ -29,20 +29,21 @@ public class HospitalLocatorController {
      * <p>
      * @param lat Latitude of the patient
      * @param lon Longitude of the patient
-     * @param speciality Required medical speciality
+     * @param specialityId Required medical speciality
      * @return The best matching hospital or 404 if none found
      */
     @GetMapping("/search")
     public ResponseEntity<?> findNearestHospital(
             @RequestParam double lat,
             @RequestParam double lon,
-            @RequestParam String speciality
+            @RequestParam int specialityId
     ) {
-        Optional<Hospital> result = hospitalLocatorService.findBestHospital(lat, lon, speciality);
+        Optional<Hospital> result = hospitalLocatorService.findBestHospital(lat, lon, specialityId);
 
         if (result.isPresent()) {
             Hospital hospital = result.get();
-            availabilityService.allocateBed(hospital.getOrgId(), speciality);
+            // Publish event
+            bedAllocationEventPublisher.publishBedAllocated(hospital, specialityId);
         }
 
         return result
@@ -54,9 +55,9 @@ public class HospitalLocatorController {
     public ResponseEntity<?> findNearestHospitalStressTest(
             @RequestParam double lat,
             @RequestParam double lon,
-            @RequestParam String speciality
+            @RequestParam int specialityId
     ) {
-        Optional<Hospital> result = hospitalLocatorService.findBestHospital(lat, lon, speciality);
+        Optional<Hospital> result = hospitalLocatorService.findBestHospital(lat, lon, specialityId);
 
         return result
                 .map(MinHospitalDTO::fromEntity)

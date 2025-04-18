@@ -3,12 +3,8 @@ package com.medhead.emergency.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.medhead.emergency.entity.Hospital;
-import org.geolatte.geom.C2D;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
-import org.geolatte.geom.builder.DSL;
-import org.geolatte.geom.crs.CoordinateReferenceSystem;
-import org.geolatte.geom.crs.CoordinateReferenceSystems;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.medhead.emergency.repository.HospitalRepository;
@@ -66,9 +62,9 @@ public class HospitalImporterService {
                 JsonNode root = mapper.readTree(json);
                 JsonNode organisations = root.get("Organisations");
 
-                // Stop if there are no more organisations
+                // Stop if there are no more organizations
                 if (organisations == null || !organisations.isArray() || organisations.isEmpty()) {
-                    hasMore = false;
+                    // hasMore = false;
                     break;
                 }
 
@@ -231,7 +227,7 @@ public class HospitalImporterService {
     }
 
     /**
-     * Geocodes a postcode using the Postcodes.io API.
+     * Geocodes a zip code using the Postcodes.io API.
      * Returns the latitude and longitude as a double array.
      *
      * @param postcode The UK postcode to geocode
@@ -239,7 +235,7 @@ public class HospitalImporterService {
      */
     private double[] geocodePostcode(String postcode) {
         try {
-            // Build the request URL, stripping spaces from the postcode
+            // Build the request URL, stripping spaces from the zip code
             String url = "https://api.postcodes.io/postcodes/" + postcode.replaceAll(" ", "");
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestProperty("Accept", "application/json");

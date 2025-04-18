@@ -1,5 +1,7 @@
 package com.medhead.emergency.event;
 
+import com.medhead.emergency.service.HospitalAvailabilityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class BedAllocationEventListener {
 
+    @Autowired
+    private HospitalAvailabilityService availabilityService;
+
     /**
      * Handles BedAllocatedEvent when a bed is successfully allocated to a hospital.
      * Logs a confirmation message with hospital name and speciality.
@@ -18,7 +23,10 @@ public class BedAllocationEventListener {
      */
     @EventListener
     public void handleBedAllocatedEvent(BedAllocatedEvent event) {
+
+        availabilityService.allocateBed(event.getHospital().getOrgId(), event.getSpecialityId());
+
         System.out.printf("📢 Bed successfully allocated at hospital: %s (speciality: %s)%n",
-                event.getHospital().getName(), event.getSpeciality());
+                event.getHospital().getName(), event.getSpecialityId());
     }
 }
