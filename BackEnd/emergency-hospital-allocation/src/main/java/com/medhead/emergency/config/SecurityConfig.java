@@ -27,7 +27,7 @@ public class SecurityConfig {
     /**
      * Defines the main security filter chain used by Spring Security.
      * <p>
-     * - Public access to /api/**
+     * - Public access to /public/**
      * - Role-based access control for other paths
      * - All other requests require authentication
      * - Uses OAuth2 Resource Server with JWT support
@@ -37,6 +37,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll()                      // Public endpoints
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")              // Admin-only
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")            // Doctor-only
                         .requestMatchers("/nurse/**").hasRole("NURSE")              // Nurse-only

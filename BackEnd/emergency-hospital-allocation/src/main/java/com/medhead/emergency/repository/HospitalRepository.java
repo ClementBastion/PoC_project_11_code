@@ -66,4 +66,25 @@ public interface HospitalRepository extends JpaRepository<Hospital, String> {
             @Param("hid") String  hospitalId,
             @Param("sid") Integer specialityId
     );
+
+
+    @Query(
+            value = """
+        SELECT h.*
+        FROM hospital h
+        JOIN hospital_speciality hs
+          ON hs.hospital_org_id = h.org_id
+         AND hs.speciality_id   = :specId
+         AND hs.available_beds  >  0
+        ORDER BY h.geom <-> ST_SetSRID(ST_MakePoint(:lon, :lat),4326)::geography
+        LIMIT :limit
+      """,
+            nativeQuery = true
+    )
+    List<Hospital> findNearestAvailable(
+            @Param("lat")      double lat,
+            @Param("lon")      double lon,
+            @Param("specId")   int specId,
+            @Param("limit")    int limit
+    );
 }

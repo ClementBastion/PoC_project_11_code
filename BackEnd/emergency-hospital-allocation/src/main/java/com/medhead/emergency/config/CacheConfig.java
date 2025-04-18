@@ -25,7 +25,8 @@ public class CacheConfig {
                 "allHospitals",
                 "findAllWithSpecialities",
                 "travelTimes",
-                "bestHospital"
+                "bestHospital",
+                "travelMatrix"
         );
 
         // Configure expiration and size limit

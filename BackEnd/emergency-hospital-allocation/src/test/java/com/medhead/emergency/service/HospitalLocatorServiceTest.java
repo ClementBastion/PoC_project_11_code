@@ -3,6 +3,7 @@ package com.medhead.emergency.service;
 import com.medhead.emergency.entity.Hospital;
 import com.medhead.emergency.entity.Speciality;
 import com.medhead.emergency.repository.HospitalRepository;
+import com.medhead.emergency.serviceInterface.TravelTimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
