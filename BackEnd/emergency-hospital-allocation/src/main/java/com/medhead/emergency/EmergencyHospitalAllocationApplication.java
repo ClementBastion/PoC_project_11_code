@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 /**
  * Main class for the Emergency Hospital Allocation application.

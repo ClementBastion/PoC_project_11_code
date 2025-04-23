@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * REST controller that exposes endpoints to retrieve hospital data.
- *
+ * <p>
  * Uses HospitalDTO to return clean and structured data to clients,
  * hiding internal entity details.
  */

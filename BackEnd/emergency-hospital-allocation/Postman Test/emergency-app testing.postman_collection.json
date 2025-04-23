@@ -265,7 +265,41 @@
 			"name": "HospitalLocatorController",
 			"item": [
 				{
-					"name": "findNearestHospital",
+					"name": "findNearestHospital Random",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Définition d'une bounding box (ici, approximative pour la France)",
+									"const minLat = 42.0, maxLat = 51.0;",
+									"const minLon = -5.0, maxLon = 8.0;",
+									"",
+									"// Génère un flottant avec 6 décimales",
+									"function randomFloat(min, max) {",
+									"  return (Math.random() * (max - min) + min).toFixed(6);",
+									"}",
+									"",
+									"// Liste de vos spécialités (IDs valides)",
+									"const specs = [1,2,3,4,5];  // adaptez selon votre base",
+									"",
+									"// Choix",
+									"const lat = randomFloat(minLat, maxLat);",
+									"const lon = randomFloat(minLon, maxLon);",
+									"const specialityId = specs[Math.floor(Math.random() * specs.length)];",
+									"",
+									"// Stockage dans des variables Postman",
+									"pm.variables.set(\"lat\", lat);",
+									"pm.variables.set(\"lon\", lon);",
+									"pm.variables.set(\"specialityId\", specialityId);",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -280,7 +314,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/hospitals/search?lat=51.58487728930564&lon=0.8861695834117534&speciality=Periodontics",
+							"raw": "http://localhost:8080/api/hospitals/search?lat={{$randomLatitude}}&lon={{$randomLongitude}}&specialityId={{specialityId}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -294,15 +328,15 @@
 							"query": [
 								{
 									"key": "lat",
-									"value": "51.58487728930564"
+									"value": "{{$randomLatitude}}"
 								},
 								{
 									"key": "lon",
-									"value": "0.8861695834117534"
+									"value": "{{$randomLongitude}}"
 								},
 								{
-									"key": "speciality",
-									"value": "Periodontics"
+									"key": "specialityId",
+									"value": "{{specialityId}}"
 								}
 							]
 						}
