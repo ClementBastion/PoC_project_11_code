@@ -2,7 +2,6 @@
 JMETER_PATH := /home/bastion/apache-jmeter-5.6.3/bin
 POSTMAN_PATH := /home/bastion/postman-linux-x64/Postman
 APP_JAR=target/emergency-hospital-allocation.jar
-JAR := $(shell ls target/*.jar 2>/dev/null | grep -v original | head -n1)
 
 env:
 	docker compose -f compose_env.yaml up -d
@@ -60,25 +59,20 @@ kafka-messages:
 
 GRADLEW := ./gradlew
 
-# on prend le premier jar produit
 JAR := $(firstword $(wildcard build/libs/*.jar))
 
 .PHONY: clean build stress-mode stress-run
 
-# 1) nettoyage
 clean:
 	$(GRADLEW) clean
 
-# 2) compilation (skip tests pour aller plus vite)
 build:
 	$(GRADLEW) build -x test
 
-# 3) démarrer le jar en profil 'stress'
 stress-mode: build
 	@echo "🚀 Démarrage en mode stress (profil=stress) via java -jar..."
 	SPRING_PROFILES_ACTIVE=stress java -jar $(JAR)
 
-# 4) ou démarrer directement via Gradle bootRun
 stress-run:
 	@echo "🚀 Démarrage en mode stress (profil=stress) via bootRun..."
 	SPRING_PROFILES_ACTIVE=stress $(GRADLEW) bootRun
