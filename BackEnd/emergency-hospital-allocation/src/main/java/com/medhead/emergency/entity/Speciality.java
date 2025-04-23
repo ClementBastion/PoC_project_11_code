@@ -10,7 +10,7 @@ public class Speciality {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String name; // e.g., "Cardiology", "Oncology", etc.
 
@@ -25,9 +25,9 @@ public class Speciality {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     public String getName() { return name; }
 
