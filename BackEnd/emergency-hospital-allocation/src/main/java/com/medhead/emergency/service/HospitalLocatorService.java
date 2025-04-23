@@ -15,6 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Service responsible for locating the best hospital for a patient in need of a specific medical specialty.
+ *
+ * <p>This service integrates hospital availability with geographic proximity and estimated travel time,
+ * using a layered fallback strategy:</p>
+ * <ol>
+ *     <li>Attempt to find a hospital within the top 5 nearest hospitals that has availability</li>
+ *     <li>Fallback to the top 10 if none are available in the top 5</li>
+ *     <li>Perform a full scan of all hospitals as a last resort</li>
+ * </ol>
+ *
+ * <p>The service also uses a batch travel time calculation to select the optimal hospital based on proximity and availability.</p>
+ */
 @Service
 public class HospitalLocatorService {
 
@@ -33,31 +46,34 @@ public class HospitalLocatorService {
     private ModelMapper modelMapper;
 
     /**
-     * Find the best hospital for the given speciality and patient location.
-     * Uses a single spatial+availability query, puis un batch ORS matrix pour les temps de trajet.
+     * Finds the best hospital for a given specialty and patient location.
+     * Uses a spatial + availability query and a single batch call for travel time estimation.
+     *
+     * @param lat          Latitude of the patient
+     * @param lon          Longitude of the patient
+     * @param specialityId ID of the medical specialty needed
+     * @return the best available hospital as an {@link Optional}, or {@link Optional#empty()} if none are found
      */
-    @Transactional(Transactional.TxType.SUPPORTS)  // lecture seule
+    @Transactional(Transactional.TxType.SUPPORTS) // read-only transaction
     public Optional<Hospital> findBestHospital(double lat, double lon, int specialityId) {
-        logger.info("Searching for best hospital for speciality '{}' at location ({}, {})",
+        logger.info("Searching for the best hospital for specialty '{}' at location ({}, {})",
                 specialityId, lat, lon);
 
-        // 1) On récupère directement les 5 hôpitaux les plus proches avec dispo
+        // 1) First, try the top 5 nearest hospitals that have available beds for the given specialty
         List<Hospital> candidates = hospitalRepository
                 .findNearestAvailable(lat, lon, specialityId, 5);
 
         if (!candidates.isEmpty()) {
-            logger.info("Found {} candidate hospitals via spatial+availability index",
-                    candidates.size());
+            logger.info("Found {} candidate hospitals via spatial + availability index", candidates.size());
 
             if (candidates.size() == 1) {
                 return Optional.of(candidates.get(0));
             }
 
-            // 2) Un seul appel batch pour tous les temps de trajet
-            Map<String,Integer> travelTimes = travelTimeService
-                    .getTravelTimesBatch(lat, lon, candidates);
+            // 2) Batch call to calculate travel times to all candidates
+            Map<String, Integer> travelTimes = travelTimeService.getTravelTimesBatch(lat, lon, candidates);
 
-            // 3) Choix du meilleur
+            // 3) Select the hospital with the shortest travel time
             Hospital best = candidates.stream()
                     .min(Comparator.comparingInt(h -> travelTimes.getOrDefault(h.getOrgId(), Integer.MAX_VALUE)))
                     .orElseThrow();
@@ -66,22 +82,22 @@ public class HospitalLocatorService {
             return Optional.of(best);
         }
 
-        // Fallback #1 : étendre à 10
+        // Fallback #1: Try the top 10 nearest hospitals
         logger.warn("No hospitals in top 5; falling back to top 10");
         List<Hospital> fallback = hospitalRepository
                 .findNearestAvailable(lat, lon, specialityId, 10);
 
         if (!fallback.isEmpty()) {
-            Map<String,Integer> ftimes = travelTimeService.getTravelTimesBatch(lat, lon, fallback);
-            Hospital bestFb = fallback.stream()
-                    .min(Comparator.comparingInt(h -> ftimes.getOrDefault(h.getOrgId(), Integer.MAX_VALUE)))
+            Map<String, Integer> fallbackTimes = travelTimeService.getTravelTimesBatch(lat, lon, fallback);
+            Hospital bestFallback = fallback.stream()
+                    .min(Comparator.comparingInt(h -> fallbackTimes.getOrDefault(h.getOrgId(), Integer.MAX_VALUE)))
                     .orElseThrow();
 
-            logger.info("Selected fallback hospital: {} (ID={})", bestFb.getName(), bestFb.getOrgId());
-            return Optional.of(bestFb);
+            logger.info("Selected fallback hospital: {} (ID={})", bestFallback.getName(), bestFallback.getOrgId());
+            return Optional.of(bestFallback);
         }
 
-        // Fallback #2 : scan complet
+        // Fallback #2: Full scan of all hospitals
         logger.warn("No hospitals available in fallback; performing full scan");
         List<Hospital> all = hospitalRepository.findAll().stream()
                 .filter(h -> h.getLatitude() != null && h.getLongitude() != null)
@@ -89,17 +105,16 @@ public class HospitalLocatorService {
                 .toList();
 
         if (all.isEmpty()) {
-            logger.error("No hospital with available beds for speciality '{}'", specialityId);
+            logger.error("No hospital with available beds for specialty '{}'", specialityId);
             return Optional.empty();
         }
 
-        Map<String,Integer> allTimes = travelTimeService.getTravelTimesBatch(lat, lon, all);
+        Map<String, Integer> allTravelTimes = travelTimeService.getTravelTimesBatch(lat, lon, all);
         Hospital bestOverall = all.stream()
-                .min(Comparator.comparingInt(h -> allTimes.getOrDefault(h.getOrgId(), Integer.MAX_VALUE)))
+                .min(Comparator.comparingInt(h -> allTravelTimes.getOrDefault(h.getOrgId(), Integer.MAX_VALUE)))
                 .orElseThrow();
 
-        logger.info("Selected hospital by full scan: {} (ID={})",
-                bestOverall.getName(), bestOverall.getOrgId());
+        logger.info("Selected hospital by full scan: {} (ID={})", bestOverall.getName(), bestOverall.getOrgId());
         return Optional.of(bestOverall);
     }
 }
