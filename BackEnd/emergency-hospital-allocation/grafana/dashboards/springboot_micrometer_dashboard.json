@@ -1,7 +1,7 @@
 {
   "id": null,
   "uid": "springboot-poc",
-  "title": "Spring Boot - Micrometer Metrics",
+  "title": "Spring Boot - Micrometer Metrics - HTTP Requests Duration",
   "tags": [
     "spring",
     "micrometer",
