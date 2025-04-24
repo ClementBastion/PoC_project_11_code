@@ -76,3 +76,6 @@ stress-mode: build
 stress-run:
 	@echo "🚀 Démarrage en mode stress (profil=stress) via bootRun..."
 	SPRING_PROFILES_ACTIVE=stress $(GRADLEW) bootRun
+
+restart kafka-exporter:
+	docker compose restart kafka-exporter

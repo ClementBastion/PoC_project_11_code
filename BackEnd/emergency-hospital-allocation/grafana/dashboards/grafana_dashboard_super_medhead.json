@@ -1,0 +1,283 @@
+{
+  "id": null,
+  "uid": "super-observability",
+  "title": "MedHead Platform - Full Observability",
+  "tags": [
+    "spring",
+    "postgres",
+    "kafka",
+    "keycloak",
+    "prometheus",
+    "observability"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 300,
+      "type": "timeseries",
+      "title": "HTTP Req/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 301,
+      "type": "timeseries",
+      "title": "HTTP Latency (Avg)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_sum[1m]) / rate(http_server_requests_seconds_count[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 302,
+      "type": "timeseries",
+      "title": "JVM Memory Used",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes",
+          "refId": "A",
+          "legendFormat": "{{area}} {{id}}"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 303,
+      "type": "timeseries",
+      "title": "Active Threads (JVM)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "jvm_threads_live_threads",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 304,
+      "type": "timeseries",
+      "title": "Postgres Connections",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "pg_stat_activity_count",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 305,
+      "type": "timeseries",
+      "title": "DB Transactions Committed",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_database_xact_commit[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 306,
+      "type": "timeseries",
+      "title": "Kafka Msgs In/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(kafka_server_brokertopicmetrics_messagesin_total[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 307,
+      "type": "timeseries",
+      "title": "Kafka Bytes In/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(kafka_server_brokertopicmetrics_bytesin_total[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 15,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 308,
+      "type": "timeseries",
+      "title": "Kafka Under-Replicated Partitions",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "kafka_server_replicamanager_underreplicatedpartitions",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 309,
+      "type": "timeseries",
+      "title": "Keycloak Active Sessions",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "keycloak_sessions_active",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 25,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 310,
+      "type": "timeseries",
+      "title": "Keycloak Total Users",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "keycloak_users_count",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 311,
+      "type": "timeseries",
+      "title": "Keycloak Logins Total",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "keycloak_login_attempts_total",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 12,
+        "h": 5
+      }
+    }
+  ]
+}

@@ -26,6 +26,17 @@ services:
     networks:
       - app_network
 
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:testpassword@db:5432/emergency_hospital?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - db
+    networks:
+      - app_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -41,10 +52,11 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: [ "start-dev", "--import-realm" ]
+    command: [ "start-dev", "--metrics-enabled=true", "--import-realm" ]
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_METRICS_ENABLED: true
     ports:
       - "8081:8080"
     volumes:
@@ -75,11 +87,24 @@ services:
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    networks:
+      - app_network
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka_exporter
+    command: [ "--kafka.server=kafka:29092" ]
+    ports:
+      - "9308:9308"
+    depends_on:
+      - kafka
+      - emergency-back
     networks:
       - app_network
 
