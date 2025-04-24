@@ -1,5 +1,7 @@
 package com.medhead.emergency;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -14,9 +16,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication
 @EnableCaching
-@PropertySource("classpath:application-secrets.properties")
+@PropertySource(value = "classpath:application-secrets.properties", ignoreResourceNotFound = true)
 @EnableScheduling  // Enables support for scheduled tasks (e.g., CRON jobs)
 public class EmergencyHospitalAllocationApplication {
+	@Value("${spring.security.oauth2.client.provider.keycloak.issuer-uri}")
+	private String issuer;
+
+	@PostConstruct
+	public void debug() {
+		System.out.println(">>> OAUTH2 ISSUER = " + issuer);
+	}
 
 	/**
 	 * Application entry point.
@@ -25,5 +34,6 @@ public class EmergencyHospitalAllocationApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EmergencyHospitalAllocationApplication.class, args);
 	}
+
 
 }
