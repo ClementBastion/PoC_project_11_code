@@ -1,0 +1,111 @@
+{
+  "id": null,
+  "uid": "springboot-full",
+  "title": "Spring Boot Full Metrics",
+  "tags": ["spring", "micrometer", "prometheus"],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "App Ready Time (s)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "application_ready_time_seconds",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 3 }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP Req/sec",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count[1m])",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 3 }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Latency (avg)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_sum[1m]) / rate(http_server_requests_seconds_count[1m])",
+          "legendFormat": "{{uri}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 3, "w": 24, "h": 7 }
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (JVM)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "process_cpu_usage",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 10, "w": 12, "h": 5 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Used (JVM)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "jvm_memory_used_bytes",
+          "legendFormat": "{{area}} {{id}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 10, "w": 12, "h": 5 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Kafka Listener Processing Time",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(spring_kafka_listener_seconds_sum[1m]) / rate(spring_kafka_listener_seconds_count[1m])",
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 15, "w": 24, "h": 5 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Active Threads",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "jvm_threads_live_threads",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 4 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Hikari Active Connections",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "hikaricp_connections_active",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 4 }
+    }
+  ]
+}

@@ -1,5 +1,17 @@
 
 services:
+  emergency-back:
+    build:
+      context: ./
+    container_name: emergency_back
+    ports:
+      - "8080:8080"
+    networks:
+      - app_network
+    depends_on:
+      - keycloak
+      - db
+
   db:
     image: postgis/postgis:15-3.3
     container_name: emergency_hospital_db
@@ -11,6 +23,18 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:testpassword@db:5432/emergency_hospital?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - db
     networks:
       - app_network
 
@@ -28,10 +52,11 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: [ "start-dev", "--import-realm" ]
+    command: [ "start-dev", "--metrics-enabled=true", "--import-realm" ]
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_METRICS_ENABLED: true
     ports:
       - "8081:8080"
     volumes:
@@ -39,6 +64,7 @@ services:
       - ./keycloak:/opt/keycloak/data/import
     networks:
       - app_network
+
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
@@ -61,13 +87,27 @@ services:
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
     networks:
       - app_network
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka_exporter
+    command: [ "--kafka.server=kafka:29092" ]
+    ports:
+      - "9308:9308"
+    depends_on:
+      - kafka
+      - emergency-back
+    networks:
+      - app_network
+
 
   kafdrop:
     image: obsidiandynamics/kafdrop
@@ -109,6 +149,31 @@ services:
       - prometheus
     networks:
       - app_network
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app_network
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /run/log/journal:/run/log/journal:ro
+      - ./promtail-config.yaml:/etc/promtail/promtail.yaml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/promtail.yaml
+    networks:
+      - app_network
+    depends_on:
+      - loki
 
 networks:
   app_network:

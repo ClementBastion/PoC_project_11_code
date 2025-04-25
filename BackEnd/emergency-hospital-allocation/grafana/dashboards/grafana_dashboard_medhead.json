@@ -1,0 +1,281 @@
+{
+  "id": null,
+  "uid": "springboot-full-extended",
+  "title": "Spring Boot Full Metrics - Extended",
+  "tags": [
+    "spring",
+    "micrometer",
+    "prometheus",
+    "medhead"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Service Availability",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "up{job=~\".*\"}",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Process Uptime (s)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "process_uptime_seconds",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "HTTP Errors Rate",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) by (uri)",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Authentication Errors/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(spring_security_authentications_seconds_count{error!=\"none\"}[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 3,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Auth Response Time",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(spring_security_authentications_seconds_sum[1m]) / rate(spring_security_authentications_seconds_count[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Logback Errors/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(logback_events_total{level=\"error\"}[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Kafka: Records Sent/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "rate(kafka_producer_record_send_total[1m])",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Kafka: Waiting Threads",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "kafka_producer_waiting_threads",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Disk Free Space",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "disk_free_bytes{path=\"/app/.\"}",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "95th Percentile HTTP Latency",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[1m]))",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "HTTP RPS Total",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count[1m]))",
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 12,
+        "h": 5
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Requests per Speciality",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{uri=~\"/api/hospitals/search.*\"}[1m])) by (uri)",
+          "refId": "A",
+          "legendFormat": "{{uri}}"
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 23,
+        "w": 12,
+        "h": 5
+      }
+    }
+  ]
+}

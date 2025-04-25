@@ -1,0 +1,466 @@
+{
+	"info": {
+		"_postman_id": "810c04f0-d802-47d8-b228-814ab400bce8",
+		"name": "emergency-app testing",
+		"description": "# ⛓️ Get started here\n\nPostman allows you to test your APIs using simple Javascript code. You can evaluate your response body, headers, cookies, and more using the [ChaiJS BDD](https://www.chaijs.com/api/bdd/) syntax.\n\nThis template guides you through the process of setting up an integration test to ensure that all individual components of an API function together seamlessly.\n\nThe API under test in this collection includes three endpoints for registering and receiving a token, accessing your unique generated name, and unregistering a token:\n\n- POST `/register`\n- POST `/unregister`\n- GET `/my-name`\n    \n\nBy setting up requests in the order of the operation, we can test the flow of data to and from the endpoints and ensure they work together as expected. We also verify that the data persists between requests on the back end.\n\n## 🔖 **How to use this template**\n\n**Step 1:** Check out the requests' documentation to learn more about -\n\n- what each request is meant to do.\n- the tests we've added against each one.\n    \n\n**Step 2:** Run this collection by clicking on \"Run\".\n\n<img src=\"https://content.pstmn.io/84019b0f-69c8-4c5f-98b9-2c90a6f9a0b1/Y29sbGVjdGlvbi1ydW5uZXItYnV0dG9uLmpwZWc=\" alt=\"\" height=\"103\" width=\"266\">\n\n**Step 3:** To customize this template, replace the request URLs with your API endpoints and add or edit the tests if needed.\n\n## ℹ️ Resources\n\n[Scripting in Postman](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/)\n\n[Test script examples](https://learning.postman.com/docs/writing-scripts/script-references/test-examples/)\n\n[Postman Sandbox API reference](https://learning.postman.com/docs/sending-requests/grpc/postman-sandbox-api/#writing-assertions)\n\n[Using the Collection Runner](https://learning.postman.com/docs/collections/running-collections/intro-to-collection-runs/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23621902"
+	},
+	"item": [
+		{
+			"name": "SpecialityController",
+			"item": [
+				{
+					"name": "getAllSpecialities",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}api/specialities",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"specialities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllAssignments",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}api/specialities/assignments",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"specialities",
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateAvailableBeds",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hospitalOrgId\": \"RAK\",\n  \"specialityName\": \"Trauma and Orthopaedic Surgery\",\n  \"availableBeds\": 3\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}api/specialities/assignments",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"specialities",
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSpecialitiesByHospital",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}api/specialities/hospital/RAK",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"specialities",
+								"hospital",
+								"RAK"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "importSpecialitiesAndAssignToHospitals",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}api/specialities/import",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"specialities",
+								"import"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HospitalController",
+			"item": [
+				{
+					"name": "getAllHospitals",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}api/hospitals",
+							"host": [
+								"{{baseUrl}}api"
+							],
+							"path": [
+								"hospitals"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "HospitalImportController",
+			"item": [
+				{
+					"name": "triggerImport",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/import/hospitals",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"import",
+								"hospitals"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HospitalLocatorController",
+			"item": [
+				{
+					"name": "findNearestHospital Random",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Définition d'une bounding box (ici, approximative pour la France)",
+									"const minLat = 42.0, maxLat = 51.0;",
+									"const minLon = -5.0, maxLon = 8.0;",
+									"",
+									"// Génère un flottant avec 6 décimales",
+									"function randomFloat(min, max) {",
+									"  return (Math.random() * (max - min) + min).toFixed(6);",
+									"}",
+									"",
+									"// Liste de vos spécialités (IDs valides)",
+									"const specs = [1,2,3,4,5];  // adaptez selon votre base",
+									"",
+									"// Choix",
+									"const lat = randomFloat(minLat, maxLat);",
+									"const lon = randomFloat(minLon, maxLon);",
+									"const specialityId = specs[Math.floor(Math.random() * specs.length)];",
+									"",
+									"// Stockage dans des variables Postman",
+									"pm.variables.set(\"lat\", lat);",
+									"pm.variables.set(\"lon\", lon);",
+									"pm.variables.set(\"specialityId\", specialityId);",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/hospitals/search?lat={{$randomLatitude}}&lon={{$randomLongitude}}&specialityId={{specialityId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"hospitals",
+								"search"
+							],
+							"query": [
+								{
+									"key": "lat",
+									"value": "{{$randomLatitude}}"
+								},
+								{
+									"key": "lon",
+									"value": "{{$randomLongitude}}"
+								},
+								{
+									"key": "specialityId",
+									"value": "{{specialityId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Register&SaveToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"An access token is returned\", () => {",
+							"    pm.expect(pm.response.code).to.eql(200);",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"access_token\");",
+							"    pm.collectionVariables.set(\"token\", json.access_token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "emergency-app",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "5VgmTTTjjvoyx19TErAOSxtcke0VbcbC",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "dr-john",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "test123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8081/realms/medhead/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"realms",
+						"medhead",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				},
+				"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/"
+		},
+		{
+			"key": "Authorization",
+			"value": "Bearer {{token}}",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

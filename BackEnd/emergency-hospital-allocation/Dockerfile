@@ -1,10 +1,15 @@
-FROM eclipse-temurin:17-jdk as build
+# Étape 1 : build avec Gradle
+FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
 COPY . .
-RUN ./gradlew bootJar
+RUN gradle clean bootJar
 
-FROM eclipse-temurin:17-jre
+# Étape 2 : image finale
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Active le profil docker
+ENTRYPOINT ["sh", "-c", "sleep 15 && java -Dspring.profiles.active=docker -jar app.jar"]
