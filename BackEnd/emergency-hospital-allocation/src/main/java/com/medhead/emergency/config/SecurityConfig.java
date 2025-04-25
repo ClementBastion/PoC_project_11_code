@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll()                      // Public endpoints
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")              // Admin-only
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")            // Doctor-only
                         .requestMatchers("/nurse/**").hasRole("NURSE")              // Nurse-only
@@ -48,7 +49,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                );
 
         return http.build();
     }
@@ -58,12 +60,12 @@ public class SecurityConfig {
      * <p>
      * This is required to validate and parse JWT tokens.
      */
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(
-                "http://localhost:8081/realms/medhead/protocol/openid-connect/certs"
-        ).build();
-    }
+//    @Bean
+//    public JwtDecoder jwtDecoder() {
+//        return NimbusJwtDecoder.withJwkSetUri(
+//                "http://localhost:8081/realms/medhead/protocol/openid-connect/certs"
+//        ).build();
+//    }
 
     /**
      * Extracts roles from the JWT token and converts them into GrantedAuthority.

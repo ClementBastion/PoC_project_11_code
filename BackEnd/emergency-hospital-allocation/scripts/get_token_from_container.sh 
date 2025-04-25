@@ -1,0 +1,10 @@
+#!/bin/sh
+
+docker exec -it emergency_back sh
+curl -X POST http://keycloak:8080/realms/medhead/protocol/openid-connect/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=emergency-app" \
+  -d "client_secret=5VgmTTTjjvoyx19TErAOSxtcke0VbcbC" \
+  -d "grant_type=password" \
+  -d "username=dr-john" \
+  -d "password=test123"
