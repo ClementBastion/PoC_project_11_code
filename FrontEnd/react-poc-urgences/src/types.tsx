@@ -19,3 +19,9 @@ export interface HospitalRecommendation {
     travelTime: number;
     specialities: string[];
 }
+
+export interface MinimalHospitalRecommendation {
+    name: string;
+    latitude: number;
+    longitude: number;
+}

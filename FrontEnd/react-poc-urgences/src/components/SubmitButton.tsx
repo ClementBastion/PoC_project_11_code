@@ -1,18 +1,22 @@
 import React from 'react';
+import { Button, CircularProgress } from '@mui/material';
 
 interface Props {
     loading: boolean;
 }
 
-// Submit button with dynamic label depending on loading state
 const SubmitButton: React.FC<Props> = ({ loading }) => (
-    <button
+    <Button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        variant="contained"
+        color="primary"
         disabled={loading}
+        fullWidth
+        sx={{ mt: 2, minHeight: 40 }}
+        size="large"
     >
-        {loading ? 'Searching...' : 'Find Hospital'}
-    </button>
+        {loading ? <CircularProgress size={24} color="inherit" /> : 'Find Hospital'}
+    </Button>
 );
 
 export default SubmitButton;

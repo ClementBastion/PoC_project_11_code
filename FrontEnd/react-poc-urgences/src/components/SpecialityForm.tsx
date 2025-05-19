@@ -3,15 +3,14 @@ import { fetchRecommendedHospital } from '../api/hospitals';
 import SpecialitySelect from './SpecialitySelect';
 import LocationInput from './LocationInput';
 import SubmitButton from './SubmitButton';
-import type {Coordinates, Speciality} from "../types.tsx";
+import type { Coordinates, Speciality } from "../types.tsx";
 import axiosWithAuth from "../api/axiosWithAuth.tsx";
-
+import { Box, Paper, Alert } from '@mui/material';
 
 interface Props {
     onResult: (result: any) => void;
 }
 
-// Main form that handles state and calls API on submit
 const SpecialityForm: React.FC<Props> = ({ onResult }) => {
     const [specialities, setSpecialities] = useState<Speciality[]>([]);
     const [speciality, setSelectedSpeciality] = useState<Speciality | null>(null);
@@ -19,7 +18,6 @@ const SpecialityForm: React.FC<Props> = ({ onResult }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Load list of specialities from the backend on component mount
     useEffect(() => {
         const loadSpecialities = async () => {
             try {
@@ -34,14 +32,13 @@ const SpecialityForm: React.FC<Props> = ({ onResult }) => {
         loadSpecialities();
     }, []);
 
-    // Handle form submission and call backend API
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            const result = await fetchRecommendedHospital(location.lat,location.lon,speciality!.id);
+            const result = await fetchRecommendedHospital(location.lat, location.lon, speciality!.id);
             onResult(result);
         } catch {
             setError('Error fetching hospital recommendation.');
@@ -50,22 +47,32 @@ const SpecialityForm: React.FC<Props> = ({ onResult }) => {
         }
     };
 
-    const handleSpecialityChange = (name: string) => {
-        const found = specialities.find((s) => s.name === name) || null;
+    const handleSpecialityChange = (id: number) => {
+        const found = specialities.find((s) => s.id === id) || null;
         setSelectedSpeciality(found);
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded space-y-4">
-            <SpecialitySelect
-                specialities={specialities}
-                selected={speciality}
-                onChange={handleSpecialityChange}
-            />
-            <LocationInput value={location} onChange={setLocation} />
-            <SubmitButton loading={loading} />
-            {error && <p className="text-red-600">{error}</p>}
-        </form>
+        <Paper
+            elevation={3}
+            sx={{
+                p: 3,
+                mt: 3,
+                mb: 2,
+                borderRadius: 2,
+            }}
+        >
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <SpecialitySelect
+                    specialities={specialities}
+                    selected={speciality}
+                    onChange={handleSpecialityChange}
+                />
+                <LocationInput value={location} onChange={setLocation} />
+                <SubmitButton loading={loading} />
+                {error && <Alert severity="error">{error}</Alert>}
+            </Box>
+        </Paper>
     );
 };
 

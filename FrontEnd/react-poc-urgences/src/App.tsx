@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import LoginForm from "./components/LoginForm.tsx";
-import SpecialityForm from "./components/SpecialityForm.tsx";
-import HospitalResult from "./components/HospitalResult.tsx";
+import { Container, Typography, Box, Paper } from '@mui/material';
+import LoginForm from "./components/LoginForm";
+import SpecialityForm from "./components/SpecialityForm";
+import HospitalResult from "./components/HospitalResult";
 
 const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
@@ -12,19 +13,24 @@ const App: React.FC = () => {
     };
 
     if (!isLoggedIn) {
+        console.log('not logged in');
         return <LoginForm onLoginSuccess={handleLoginSuccess} />;
     }
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Emergency Hospital Recommendation</h1>
-            <SpecialityForm onResult={setHospital} />
-            {hospital && (
-                <div className="mt-6">
-                    <HospitalResult hospital={hospital} />
-                </div>
-            )}
-        </div>
+        <Container maxWidth="sm" sx={{ mt: 6 }}>
+            <Paper elevation={4} sx={{ p: 4 }}>
+                <Typography variant="h4" fontWeight="bold" gutterBottom>
+                    Emergency Hospital Recommendation
+                </Typography>
+                <SpecialityForm onResult={setHospital} />
+                {hospital && (
+                    <Box mt={6}>
+                        <HospitalResult hospital={hospital} />
+                    </Box>
+                )}
+            </Paper>
+        </Container>
     );
 };
 

@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Alert,
+    Paper
+} from '@mui/material';
 
 const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess }) => {
     const [username, setUsername] = useState('');
@@ -11,7 +19,6 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess })
         setError(null);
 
         try {
-
             const res = await axios.post(
                 `${import.meta.env.VITE_KEYCLOAK_URL}/realms/${import.meta.env.VITE_KEYCLOAK_REALM}/protocol/openid-connect/token`,
                 new URLSearchParams({
@@ -28,11 +35,8 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess })
             );
 
             const { access_token, refresh_token } = res.data;
-
-            // Store tokens in localStorage
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);
-
             onLoginSuccess();
         } catch {
             setError('Login failed. Please check your credentials.');
@@ -40,33 +44,56 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({ onLoginSuccess })
     };
 
     return (
-        <form onSubmit={handleLogin} className="p-4 border rounded space-y-4 max-w-sm mx-auto mt-8">
-            <h2 className="text-xl font-bold mb-2">Login</h2>
-            <div>
-                <label className="block mb-1">Username:</label>
-                <input
-                    className="w-full p-2 border rounded"
-                    type="text"
+        <Box
+            component={Paper}
+            elevation={3}
+            sx={{
+                p: 4,
+                maxWidth: 400,
+                mx: 'auto',
+                mt: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+            }}
+        >
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+                Login
+            </Typography>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <TextField
+                    label="Username"
+                    variant="outlined"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
+                    fullWidth
                 />
-            </div>
-            <div>
-                <label className="block mb-1">Password:</label>
-                <input
-                    className="w-full p-2 border rounded"
+                <TextField
+                    label="Password"
+                    variant="outlined"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    fullWidth
                 />
-            </div>
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded w-full">
-                Login
-            </button>
-            {error && <p className="text-red-600 mt-2">{error}</p>}
-        </form>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                >
+                    Login
+                </Button>
+                {error && (
+                    <Alert severity="error" sx={{ mt: 2 }}>
+                        {error}
+                    </Alert>
+                )}
+            </form>
+        </Box>
     );
 };
 
