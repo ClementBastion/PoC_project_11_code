@@ -31,7 +31,7 @@ public class BedAllocationKafkaConsumer {
                 "🔔 [Kafka] Bed allocation received: hospitalId=%s, name=%s, speciality=%s%n",
                 message.getHospitalId(),
                 message.getHospitalName(),
-                message.getSpeciality()
+                message.getSpecialityId()
         );
     }
 }
