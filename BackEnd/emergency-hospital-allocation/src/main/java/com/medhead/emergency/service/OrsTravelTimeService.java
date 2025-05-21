@@ -72,7 +72,7 @@ public class OrsTravelTimeService implements TravelTimeService {
         Map<String, Object> body = new HashMap<>();
         body.put("locations", locations);
         body.put("metrics", List.of("duration"));
-        body.put("sources", List.of(0)); // only compute from the patient
+        body.put("sources", List.of(0));
         body.put("destinations", IntStream.range(1, locations.size()).boxed().toList());
 
         try {
@@ -82,7 +82,7 @@ public class OrsTravelTimeService implements TravelTimeService {
                     .bodyValue(body)
                     .retrieve()
                     .onStatus(status -> status.is4xxClientError(),
-                            resp -> Mono.error(new RuntimeException("Matrix 4xx")))
+                            resp -> Mono.error(new RuntimeException("Matrix 4xx "+resp.toString())))
                     .onStatus(status -> status.is5xxServerError(),
                             resp -> Mono.error(new RuntimeException("Matrix 5xx")))
                     .bodyToMono(JsonNode.class)
