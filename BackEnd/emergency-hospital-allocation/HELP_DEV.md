@@ -1,11 +1,17 @@
 # Emergency Project - Initialization Guide
 
-## 1. Start the Application with Docker
+## 1. Start the Application
 
-Use Docker Compose to build and start the application in detached mode:
+Use Docker Compose to build and start the env in detached mode:
 
 ```bash
-docker compose up --build -d
+docker compose -f compose_dev.yaml up --build -d
+```
+
+Start java app:
+
+```bash
+make dev-run
 ```
 
 ## 2. Authenticate with Keycloak
@@ -18,20 +24,6 @@ To interact with the secured API, you need to retrieve a valid access token from
 docker exec -it emergency_back sh
 ```
 
-### b. Retrieve an access token via `curl`:
-
-```bash
-curl -X POST http://keycloak:8080/realms/medhead/protocol/openid-connect/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=emergency-app" \
-  -d "client_secret=5VgmTTTjjvoyx19TErAOSxtcke0VbcbC" \
-  -d "grant_type=password" \
-  -d "username=dr-john" \
-  -d "password=test123"
-```
-
-Copy the value of the `access_token` from the JSON response.
-
 ## 3. Use Postman to Test the API
 
 ### a. Open and import the Postman collection:
@@ -43,7 +35,12 @@ Located at:
 
 ### b. Set your token in Postman:
 
-Use the `access_token` from the previous step and set it in the "Authorization" header as a Bearer token for all API calls.
+To set the “Authorization” header for the Bearer token for all API calls.
+In the Postman collection, call:
+
+```
+Register&SaveToken
+```
 
 ## 4. Trigger Initial Data Synchronization
 
