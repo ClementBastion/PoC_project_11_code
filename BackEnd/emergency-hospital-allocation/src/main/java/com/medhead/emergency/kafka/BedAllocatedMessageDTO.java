@@ -23,8 +23,17 @@ public class BedAllocatedMessageDTO {
         return hospitalName;
     }
 
-    public Integer getSpeciality() {
+    public Integer getSpecialityId() {
         return specialityId;
+    }
+
+    @Override
+    public String toString() {
+        return "BedAllocatedMessageDTO{" +
+                "hospitalId='" + hospitalId + '\'' +
+                ", hospitalName='" + hospitalName + '\'' +
+                ", specialityId=" + specialityId +
+                '}';
     }
 
 }

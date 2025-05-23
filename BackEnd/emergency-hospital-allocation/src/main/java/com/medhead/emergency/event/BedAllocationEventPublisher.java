@@ -47,6 +47,7 @@ public class BedAllocationEventPublisher {
                 hospital.getName(),
                 specialityId
         );
+
         kafkaPublisher.publish(message);
     }
 }
