@@ -1,5 +1,5 @@
 import axiosWithAuth from "./axiosWithAuth.tsx";
-import type {HospitalRecommendation} from "../types.tsx";
+import type {MinimalHospitalRecommendation} from "../types.tsx";
 
 
 
@@ -8,8 +8,8 @@ export async function fetchRecommendedHospital(
     lat: number,
     lon: number,
     specialityId: number,
-): Promise<HospitalRecommendation> {
-    const response = await axiosWithAuth.get<HospitalRecommendation>('api/hospitals/search', {
+): Promise<MinimalHospitalRecommendation> {
+    const response = await axiosWithAuth.get<MinimalHospitalRecommendation>('api/hospitals/search', {
         params: {
             lat,
             lon,

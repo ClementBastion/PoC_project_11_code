@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import LoginForm from '../components/LoginForm';
 import SpecialityForm from '../components/SpecialityForm';
 import HospitalResult from '../components/HospitalResult';
+import type {MinimalHospitalRecommendation} from "../types.tsx";
 
 const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
-    const [hospital, setHospital] = useState<any | null>(null);
+    const [hospital, setHospital] = useState<MinimalHospitalRecommendation | null>(null);
 
     const handleLoginSuccess = () => {
         setIsLoggedIn(true);
     };
-
-    console.log(import.meta.env);
 
     if (!isLoggedIn) {
         return <LoginForm onLoginSuccess={handleLoginSuccess} />;

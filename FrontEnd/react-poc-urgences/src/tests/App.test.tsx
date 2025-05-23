@@ -1,25 +1,23 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from "../App.tsx";
+import type {MinimalHospitalRecommendation} from "../types.tsx";
 
 // Mock the subcomponents to isolate App behavior from their real implementations
 vi.mock('../components/LoginForm', () => ({
-    default: (props: any) => {
-        // When rendered, this mock triggers onLoginSuccess when clicked
-        return <div data-testid="login-form" onClick={props.onLoginSuccess}>LoginForm</div>;
-    }
+    default: (props: { onLoginSuccess: () => void }) =>
+        <div data-testid="login-form" onClick={props.onLoginSuccess}>LoginForm</div>
 }));
 vi.mock('../components/SpecialityForm', () => ({
-    default: (props: any) =>
-        // This mock triggers onResult with a fake hospital when clicked
+    default: (props: { onResult: (h: MinimalHospitalRecommendation) => void }) =>
         <div data-testid="speciality-form" onClick={() => props.onResult({ name: 'Test Hospital', latitude: 1, longitude: 2 })}>
             SpecialityForm
         </div>
 }));
 vi.mock('../components/HospitalResult', () => ({
-    default: (props: any) =>
-        // This mock simply displays the hospital name passed in props
+    default: (props: { hospital?: { name?: string } }) =>
         <div data-testid="hospital-result">{props.hospital?.name}</div>
 }));
+
 
 describe('App', () => {
     // Clear localStorage before each test to reset authentication state

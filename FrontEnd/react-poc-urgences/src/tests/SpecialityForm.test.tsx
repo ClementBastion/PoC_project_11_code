@@ -2,20 +2,28 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 // Mock subcomponents to avoid testing their internal behavior here
 vi.mock('../components/SpecialitySelect', () => ({
-    default: (props: any) => (
+    default: (props: {
+        selected: { id: number } | null;
+        specialities: { id: number; name: string }[];
+        onChange: (id: number) => void;
+    }) => (
         <select
             data-testid="speciality-select"
-            value={props.selected?.id || ''}
+            value={props.selected?.id ?? ''}
             onChange={e => props.onChange(Number(e.target.value))}
         >
-            {props.specialities.map((spec: any) => (
+            {props.specialities.map(spec => (
                 <option key={spec.id} value={spec.id}>{spec.name}</option>
             ))}
         </select>
     ),
 }));
+
 vi.mock('../components/LocationInput', () => ({
-    default: (props: any) => (
+    default: (props: {
+        value: { lat: number; lon: number };
+        onChange: (value: { lat: number; lon: number }) => void;
+    }) => (
         <div>
             <input
                 data-testid="lat-input"
@@ -30,8 +38,9 @@ vi.mock('../components/LocationInput', () => ({
         </div>
     ),
 }));
+
 vi.mock('../components/SubmitButton', () => ({
-    default: (props: any) => (
+    default: (props: { loading: boolean }) => (
         <button data-testid="submit-btn" disabled={props.loading}>
             {props.loading ? "Searching..." : "Find Hospital"}
         </button>
@@ -49,6 +58,7 @@ vi.mock('../api/hospitals', () => ({
 import axiosWithAuth from '../api/axiosWithAuth.tsx';
 import { fetchRecommendedHospital } from '../api/hospitals';
 import SpecialityForm from "../components/SpecialityForm.tsx";
+import {vi} from "vitest";
 
 describe('SpecialityForm', () => {
     const fakeSpecialities = [
@@ -64,7 +74,7 @@ describe('SpecialityForm', () => {
 
     it('renders the form and its fields', async () => {
         // Mock successful specialities fetch
-        (axiosWithAuth.get as any).mockResolvedValueOnce({ data: fakeSpecialities });
+        (axiosWithAuth.get as vi.Mock).mockResolvedValueOnce({ data: fakeSpecialities });
 
         render(<SpecialityForm onResult={mockOnResult} />);
         // Wait for useEffect
@@ -77,7 +87,7 @@ describe('SpecialityForm', () => {
     });
 
     it('displays an error if loading specialities fails', async () => {
-        (axiosWithAuth.get as any).mockRejectedValueOnce(new Error('fail'));
+        (axiosWithAuth.get as vi.Mock).mockRejectedValueOnce(new Error('fail'));
         render(<SpecialityForm onResult={mockOnResult} />);
         await waitFor(() => {
             expect(screen.getByText(/failed to load specialities/i)).toBeInTheDocument();
@@ -85,8 +95,8 @@ describe('SpecialityForm', () => {
     });
 
     it('calls fetchRecommendedHospital and onResult on submit', async () => {
-        (axiosWithAuth.get as any).mockResolvedValueOnce({ data: fakeSpecialities });
-        (fetchRecommendedHospital as any).mockResolvedValueOnce(fakeResult);
+        (axiosWithAuth.get as vi.Mock).mockResolvedValueOnce({ data: fakeSpecialities });
+        (fetchRecommendedHospital as vi.Mock).mockResolvedValueOnce(fakeResult);
 
         render(<SpecialityForm onResult={mockOnResult} />);
 
@@ -109,8 +119,8 @@ describe('SpecialityForm', () => {
     });
 
     it('shows an error if fetchRecommendedHospital fails', async () => {
-        (axiosWithAuth.get as any).mockResolvedValueOnce({ data: fakeSpecialities });
-        (fetchRecommendedHospital as any).mockRejectedValueOnce(new Error('fail'));
+        (axiosWithAuth.get as vi.Mock).mockResolvedValueOnce({ data: fakeSpecialities });
+        (fetchRecommendedHospital as vi.Mock).mockRejectedValueOnce(new Error('fail'));
 
         render(<SpecialityForm onResult={mockOnResult} />);
 

@@ -4,6 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 vi.mock('axios');
 import axios from 'axios';
 import LoginForm from "../components/LoginForm.tsx";
+import {vi} from "vitest";
 
 describe('LoginForm', () => {
     const mockOnLoginSuccess = vi.fn();
@@ -35,7 +36,7 @@ describe('LoginForm', () => {
 
     it('calls onLoginSuccess and sets tokens on successful login', async () => {
         // Mock successful response from axios
-        (axios.post as any).mockResolvedValueOnce({
+        (axios.post as vi.Mock).mockResolvedValueOnce({
             data: {
                 access_token: 'abc123',
                 refresh_token: 'def456',
@@ -59,7 +60,7 @@ describe('LoginForm', () => {
 
     it('displays error message on login failure', async () => {
         // Mock failed response from axios
-        (axios.post as any).mockRejectedValueOnce(new Error('fail'));
+        (axios.post as vi.Mock).mockRejectedValueOnce(new Error('fail'));
 
         render(<LoginForm onLoginSuccess={mockOnLoginSuccess} />);
 

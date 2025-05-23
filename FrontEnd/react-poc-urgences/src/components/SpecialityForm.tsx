@@ -3,12 +3,12 @@ import { fetchRecommendedHospital } from '../api/hospitals';
 import SpecialitySelect from './SpecialitySelect';
 import LocationInput from './LocationInput';
 import SubmitButton from './SubmitButton';
-import type { Coordinates, Speciality } from "../types.tsx";
+import type {Coordinates, MinimalHospitalRecommendation, Speciality} from "../types.tsx";
 import axiosWithAuth from "../api/axiosWithAuth.tsx";
 import { Box, Paper, Alert } from '@mui/material';
 
 interface Props {
-    onResult: (result: any) => void;
+    onResult: (result: MinimalHospitalRecommendation) => void;
 }
 
 const SpecialityForm: React.FC<Props> = ({ onResult }) => {
