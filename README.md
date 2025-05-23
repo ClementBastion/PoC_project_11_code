@@ -61,3 +61,19 @@ The project relies on three main branches:
 ```sh
 git clone https://github.com/ClementBastion/PoC_project_11_code.git
 cd emergency-hospital-allocation
+
+
+## 🚦 Continuous Integration & Delivery
+
+| Workflow                       | Badge                                                                                                           |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------|
+| **CI – Build & Test Backend**  | ![CI – Build & Test Spring Boot App](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/ci-back.yml/badge.svg)   |
+| **CD – Fake Delivery**         | ![CD – Fake Delivery](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/cd-back.yml/badge.svg)         |
+| **Frontend CI**                | ![Frontend CI](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/Frontend_CI.yml/badge.svg)                |
+
+---
+
+- **CI – Build & Test Spring Boot App:** Runs build, unit, and integration tests for the Spring Boot backend.
+- **CD – Fake Delivery:** Handles deployment simulation and delivery pipeline for backend services.
+- **Frontend CI:** Runs lint, unit/integration tests, and Cypress E2E for the React frontend.
+
