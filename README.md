@@ -61,7 +61,7 @@ The project relies on three main branches:
 ```sh
 git clone https://github.com/ClementBastion/PoC_project_11_code.git
 cd emergency-hospital-allocation
-
+```
 
 ## 🚦 Continuous Integration & Delivery
 
