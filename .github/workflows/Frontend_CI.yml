@@ -33,18 +33,12 @@ jobs:
       - name: Run unit tests (Vitest or Jest)
         run: |
           if [ -f ./vitest.config.ts ]; then
-            npx vitest run --coverage
+            npx vitest 
           elif [ -f ./jest.config.js ]; then
-            npm run test -- --coverage
+            npm run test 
           else
             echo "No test runner config found"
           fi
-
-      - name: Upload test coverage (if any)
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-coverage
-          path: FrontEnd/react-poc-urgences/coverage/
 
   e2e:
     name: Cypress E2E
