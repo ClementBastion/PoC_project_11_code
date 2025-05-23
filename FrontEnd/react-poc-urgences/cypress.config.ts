@@ -1,4 +1,5 @@
-import { defineConfig } from 'cypress';
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
   e2e: {
