@@ -1,6 +1,6 @@
 
 services:
-  emergency-back:
+  backend:
     build:
       context: ./
     container_name: emergency_back
@@ -11,6 +11,8 @@ services:
     depends_on:
       - keycloak
       - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgis/postgis:15-3.3
@@ -25,6 +27,19 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app_network
+
+  frontend:
+    container_name: emergency-frontend
+    build:
+      context: ../../FrontEnd/react-poc-urgences
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    networks:
+      - app_network
+    depends_on:
+      - backend
+    restart: unless-stopped
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter
@@ -62,8 +77,6 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./keycloak:/opt/keycloak/data/import
-    networks:
-      - app_network
 
 
   zookeeper:
@@ -104,7 +117,7 @@ services:
       - "9308:9308"
     depends_on:
       - kafka
-      - emergency-back
+      - backend
     networks:
       - app_network
 

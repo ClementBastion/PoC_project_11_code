@@ -1,4 +1,4 @@
-.PHONY: db db-logs clean-keycloak locust jmeter postman
+.PHONY: db db-logs clean-keycloak locust jmeter postman keycloak
 JMETER_PATH := /home/bastion/apache-jmeter-5.6.3/bin
 POSTMAN_PATH := /home/bastion/postman-linux-x64/Postman
 APP_JAR=target/emergency-hospital-allocation.jar
@@ -77,5 +77,28 @@ stress-run:
 	@echo "🚀 Démarrage en mode stress (profil=stress) via bootRun..."
 	SPRING_PROFILES_ACTIVE=stress $(GRADLEW) bootRun
 
+
+dev-mode: build
+	@echo "🚀 Démarrage en mode dev (profil=dev) via java -jar..."
+	SPRING_PROFILES_ACTIVE=dev java -jar $(JAR)
+
+dev-run:
+	@echo "🚀 Démarrage en mode dev (profil=dev) via bootRun..."
+	SPRING_PROFILES_ACTIVE=dev $(GRADLEW) bootRun
+
 restart kafka-exporter:
 	docker compose restart kafka-exporter
+
+
+keycloak:
+	docker run -d \
+	  --name keycloak \
+	  -p 8081:8080 \
+	  -e KEYCLOAK_ADMIN=admin \
+	  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+	  -v "$(shell pwd)/keycloak:/opt/keycloak/data/import" \
+	  quay.io/keycloak/keycloak:24.0.3 \
+	  start-dev \
+	  --hostname-url=http://localhost:8081 \
+	  --hostname-strict=false \
+	  --import-realm
