@@ -4,13 +4,13 @@ POSTMAN_PATH := /home/bastion/postman-linux-x64/Postman
 APP_JAR=target/emergency-hospital-allocation.jar
 
 env:
-	docker compose -f compose_env.yaml up -d
+	docker compose -f compose_dev.yml up
 
 env-logs:
-	docker compose -f compose_env.yaml logs -f
+	docker compose -f compose_dev.yml logs -f
 
 env-build:
-	docker compose -f compose_env.yaml up --build
+	docker compose -f compose_dev.yml up --build
 
 clean-keycloak:
 	docker rm -f keycloak || true

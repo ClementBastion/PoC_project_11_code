@@ -5,7 +5,7 @@
 Use Docker Compose to build and start the env in detached mode:
 
 ```bash
-docker compose -f compose_dev.yaml up --build -d
+docker compose -f compose_dev.yml up --build -d
 ```
 
 Start java app:
@@ -21,7 +21,7 @@ To interact with the secured API, you need to retrieve a valid access token from
 ### a. Access the backend container:
 
 ```bash
-docker exec -it emergency_back sh
+docker exec -it emergency-back sh
 ```
 
 ## 3. Use Postman to Test the API

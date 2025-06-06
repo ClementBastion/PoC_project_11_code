@@ -19,7 +19,7 @@ services:
 #  backend:
 #    build:
 #      context: ./
-#    container_name: emergency_back
+#    container_name: emergency-back
 #    ports:
 #      - "8080:8080"
 #    networks:

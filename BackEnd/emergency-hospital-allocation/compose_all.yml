@@ -3,16 +3,15 @@ services:
   backend:
     build:
       context: ./
-    container_name: emergency_back
+    container_name: emergency-back
     ports:
       - "8080:8080"
     networks:
-      - app_network
+      - app_network_all
     depends_on:
       - keycloak
       - db
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+
 
   db:
     image: postgis/postgis:15-3.3
@@ -26,7 +25,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - app_network
+      - app_network_all
 
   frontend:
     container_name: emergency-frontend
@@ -36,7 +35,7 @@ services:
     ports:
       - "5173:80"
     networks:
-      - app_network
+      - app_network_all
     depends_on:
       - backend
     restart: unless-stopped
@@ -51,7 +50,7 @@ services:
     depends_on:
       - db
     networks:
-      - app_network
+      - app_network_all
 
   pgadmin:
     image: dpage/pgadmin4
@@ -62,7 +61,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      - app_network
+      - app_network_all
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
@@ -77,6 +76,8 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./keycloak:/opt/keycloak/data/import
+    networks:
+      - app_network_all
 
 
   zookeeper:
@@ -88,7 +89,7 @@ services:
     ports:
       - "2181:2181"
     networks:
-      - app_network
+      - app_network_all
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
@@ -107,7 +108,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
     networks:
-      - app_network
+      - app_network_all
 
   kafka-exporter:
     image: danielqsj/kafka-exporter
@@ -119,8 +120,8 @@ services:
       - kafka
       - backend
     networks:
-      - app_network
-
+      - app_network_all
+    restart: unless-stopped
 
   kafdrop:
     image: obsidiandynamics/kafdrop
@@ -133,7 +134,7 @@ services:
     ports:
       - "9000:9000"
     networks:
-      - app_network
+      - app_network_all
 
   prometheus:
     image: prom/prometheus
@@ -143,7 +144,7 @@ services:
     ports:
       - "9090:9090"
     networks:
-      - app_network
+      - app_network_all
 
   grafana:
     image: grafana/grafana-oss
@@ -161,7 +162,7 @@ services:
     depends_on:
       - prometheus
     networks:
-      - app_network
+      - app_network_all
 
   loki:
     image: grafana/loki:2.9.0
@@ -170,7 +171,7 @@ services:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - app_network
+      - app_network_all
 
   promtail:
     image: grafana/promtail:2.9.0
@@ -184,13 +185,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: -config.file=/etc/promtail/promtail.yaml
     networks:
-      - app_network
+      - app_network_all
     depends_on:
       - loki
 
 networks:
-  app_network:
-    driver: bridge
+  app_network_all:
+
 
 volumes:
   db_data:

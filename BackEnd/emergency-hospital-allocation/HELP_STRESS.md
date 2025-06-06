@@ -5,7 +5,7 @@
 Use Docker Compose to build and start the env in detached mode:
 
 ```bash
-docker compose -f compose_dev.yaml up --build -d
+docker compose -f compose_dev.yml up --build -d
 ```
 
 Start java app:
