@@ -1,45 +1,79 @@
 # Emergency Hospital Allocation
 
-## 📖 Description
-Ce projet est une preuve de concept (**PoC**) pour un système d'allocation de lits d'hôpital en temps réel en fonction des spécialités médicales disponibles. Il repose sur une architecture **Spring Boot + React + PostgreSQL** et s'inscrit dans une architecture **microservices**.
+# 📖 Description
+This project is a proof of concept (**PoC**) for a real-time hospital bed allocation system based on available medical specialities.  
+It is built on a **Spring Boot + React + PostgreSQL** stack, follows a **microservices architecture**, and is production-ready DevOps environments.
 
 ---
 
-## ⚙️ Technologies utilisées
-- **Back-end** : Java 17 + Spring Boot 3
-- **Front-end** : React
-- **Base de données** : PostgreSQL + Flyway
-- **CI/CD** : GitHub Actions 
-- **Conteneurisation** : Docker & Docker Compose
-- **Tests** : JUnit 5 + RestAssured + Testcontainers
-- **Sécurité** : Spring Security
+## ⚙️ Technologies Used
+- **Back-end**: Java 17 + Spring Boot 3
+- **Front-end**: React + TypeScript + Material UI (MUI)
+- **Database**: PostgreSQL + PostGIS + Flyway
+- **CI/CD**: GitHub Actions
+- **Containerization**: Docker & Docker Compose
+- **Testing**:
+  - Unit/Integration: JUnit 5, Testcontainers, Vitest, React Testing Library
+  - **E2E:** Cypress 
+- **Security**: Spring Security, OAuth2, Keycloak
 
 ---
-# 🚀 Workflow Git – Emergency Hospital Allocation
+
+## 🐳 **Docker Compose Environment**
+
+This project comes with a rich service stack for local and CI usage:
+
+- **Keycloak** : Identity and access management
+- **PostgreSQL + PostGIS**: Main application database 
+- **pgAdmin**: Database management UI 
+- **Prometheus, Grafana, Loki, Promtail**: Monitoring, dashboards, and logs
+- **Zookeeper, Kafka, Kafdrop, kafka-exporter**: Event streaming and monitoring
+- **postgres-exporter**: PostgreSQL monitoring for Prometheus
+
+
+---
+
+# 🚀 Git Workflow – Emergency Hospital Allocation
 
 ## 📖 Introduction
-Ce document décrit le workflow Git utilisé pour gérer le développement du projet. Il suit le modèle **GitHub Flow**, où chaque fonctionnalité est développée dans une branche dédiée avant d'être fusionnée dans `develop`, puis en `main`.
+This document describes the Git workflow used to manage the project’s development.  
+It follows the **GitHub Flow** model, where each feature is developed in a dedicated branch before being merged into `develop`, and eventually into `main`.
 
 ---
 
-## 🏗 **Branches principales**
-Le projet repose sur trois branches principales :
-- **`main`** : Contient le code stable et prêt pour la production.
-- **`develop`** : Branche de développement où toutes les fonctionnalités sont fusionnées avant de passer en production.
-- **`feature/nom-fonctionnalité`** : Branches temporaires utilisées pour ajouter de nouvelles fonctionnalités.
+## 🏗 **Main Branches**
+The project relies on three main branches:
+- **`main`**: Contains stable, production-ready code.
+- **`develop`**: Development branch where all features are merged before being promoted to production.
+- **`feature/feature-name`**: Temporary branches used to add new features.
   
-### 📌 Convention des messages de commit :
-- feat: … → Nouvelle fonctionnalité
-- fix: … → Correction de bug
-- refactor: … → Refactorisation de code
-- test: … → Ajout/modification de tests
-- docs: … → Mise à jour de la documentation
+### 📌 Commit Message Convention:
+- `feat: ...` → New feature
+- `fix: ...` → Bug fix
+- `refactor: ...` → Code refactoring
+- `test: ...` → Adding/modifying tests
+- `docs: ...` → Documentation updates
 
 ---
 
-
-# 📌 ***Cloner le projet***
+# 📌 ***Clone the Project***
 
 ```sh
 git clone https://github.com/ClementBastion/PoC_project_11_code.git
 cd emergency-hospital-allocation
+```
+
+## 🚦 Continuous Integration & Delivery
+
+| Workflow                       | Badge                                                                                                           |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------|
+| **CI – Build & Test Backend**  | ![CI – Build & Test Spring Boot App](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/ci-back.yml/badge.svg)   |
+| **CD – Fake Delivery**         | ![CD – Fake Delivery](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/cd-back.yml/badge.svg)         |
+| **Frontend CI**                | ![Frontend CI](https://github.com/ClementBastion/PoC_project_11_code/actions/workflows/Frontend_CI.yml/badge.svg)                |
+
+---
+
+- **CI – Build & Test Spring Boot App:** Runs build, unit, and integration tests for the Spring Boot backend.
+- **CD – Fake Delivery:** Handles deployment simulation and delivery pipeline for backend services.
+- **Frontend CI:** Runs lint, unit/integration tests, and Cypress E2E for the React frontend.
+
