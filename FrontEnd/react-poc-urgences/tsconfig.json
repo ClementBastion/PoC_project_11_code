@@ -6,5 +6,12 @@
   ],
   "compilerOptions": {
     "types": ["vitest/globals", "vite/client"]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }
